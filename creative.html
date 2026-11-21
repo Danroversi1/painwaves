@@ -55,6 +55,10 @@ input[type=range]{width:100%;accent-color:var(--glow);height:28px}
 .btn{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--glow);background:none;color:var(--ink);cursor:pointer;font-size:15px}
 .btn.solid{background:var(--glow);color:var(--bg)}
 [hidden]{display:none!important}
+.sndgate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;min-height:48px;padding:0 22px;border-radius:999px;border:1px solid var(--glow);background:rgba(11,13,11,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--ink);font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;white-space:nowrap;animation:gatepulse 2.4s ease-in-out infinite}
+.sndgate span{color:var(--glow);font-size:18px}.sndgate:hover{background:var(--glow);color:var(--bg)}.sndgate:hover span{color:var(--bg)}
+@keyframes gatepulse{50%{box-shadow:0 0 0 8px rgba(184,199,176,.12)}}
+@media(prefers-reduced-motion:reduce){.sndgate{animation:none}}
 .npins{position:absolute;inset:0;z-index:2;pointer-events:none}
 .npin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);background:var(--glow);color:var(--bg);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;box-shadow:0 0 0 1px var(--glow),0 2px 10px rgba(0,0,0,.6);padding:0}
 .npin::after{content:'';position:absolute;inset:-12px}
@@ -152,6 +156,7 @@ footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
   <section class="studio" aria-label="Particle studio">
     <div class="stage" id="stage" tabindex="0" aria-label="Particle stage: drag to turn or move, scroll to fly in, W A S D Q E and arrow keys to move, M switches drag mode">
       <canvas id="cv" aria-label="Particle animation of the selected image"></canvas>
+      <button class="sndgate" id="sndGate" hidden><span aria-hidden="true">♪</span> Sound is on · click anywhere to hear it</button>
       <div class="pins" id="pins"></div>
       <div class="npop" id="npop" hidden></div>
       <div class="hud" id="hud"></div>
@@ -433,10 +438,17 @@ const startSound=async()=>{const b=$('#sndBtn');
 $('#sndBtn').onclick=startSound;
 // sound is on by default: build the engine at load; browsers keep it paused until the first click, tap or key press anywhere
 const setSndLabel=()=>{const b=$('#sndBtn');if(!AC)return;const on=AC.state==='running';b.textContent=on?'Sound off':'Sound on';b.setAttribute('aria-pressed',on);$('#sndMsg').textContent=on?'Starts quiet. Voices above about 400 may stutter on slower devices.':'Sound starts with your first click or key press on the page.'};
-const autoSound=async()=>{if(AC)return;await startSound();if(AC){AC.onstatechange=setSndLabel;setSndLabel();
-  let userOff=false;$('#sndBtn').addEventListener('click',()=>{userOff=true},{once:true,capture:true});
-  const wake=()=>{if(AC&&AC.state!=='running'&&!userOff){AC.resume().then(()=>MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.6))}};
-  ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,wake,{once:true,capture:true}))}};
+const autoSound=async()=>{if(AC)return;await startSound();if(!AC)return;
+  let userOff=false;const gate=$('#sndGate'),evs=['pointerdown','pointerup','touchend','keydown','click'];
+  const showGate=()=>{gate.hidden=!(AC&&AC.state!=='running'&&!userOff)};
+  AC.onstatechange=()=>{setSndLabel();showGate();if(AC.state==='running')evs.forEach(ev=>document.removeEventListener(ev,wake,true))};
+  $('#sndBtn').addEventListener('click',()=>{userOff=true;showGate()},{once:true,capture:true});
+  const wake=e=>{if(userOff||!AC||AC.state==='running')return;if(e&&e.target&&e.target.closest&&e.target.closest('#sndBtn'))return;
+    AC.resume().then(()=>MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.6)).catch(()=>{})};
+  evs.forEach(ev=>document.addEventListener(ev,wake,true));
+  gate.onclick=e=>{e.stopPropagation();wake()};
+  setSndLabel();showGate();
+  if(AC.state!=='running')AC.resume().catch(()=>{})};
 $('#vol').oninput=e=>{if(MGN)MGN.gain.setTargetAtTime(+e.target.value*1.5,AC.currentTime,.05)};
 $('#voices').oninput=e=>{VC=+e.target.value;makePools();$('#voicesOut').textContent=VC+(VC>=nP?' (one per person)':'')};
 // ---------- trace ----------
