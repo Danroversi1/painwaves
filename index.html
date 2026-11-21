@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark only">
+<title>Painwaves — Science board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm night-time lab notebook from a producer: precise, honest about evidence, never clinical-cold.
+   IDEA: an oscilloscope monograph — every chapter is a trace that moves from silence, through pain, back to silence.
+   PICTURE: a full-width trace built from the real Cz waveform: alpha ripple, pain pulses, relief decay.
+   COLOUR and TYPE: the Primordial Soup night spread — #0b0d0b ground, ink #e9ebe6, sage glow #b8c7b0, ember for pain. Instrument Serif + DM Sans.
+   LAYOUT: masthead, hero trace, sticky contents, four chapters (brain, words, relief, sound), the plan, method notes. */
+:root{color-scheme:dark only;--bg:#0b0d0b;--paper:#121412;--card:#161915;--ink:#e9ebe6;--soft:#b9bcb3;--muted:#979b91;--rule:#2a2e29;--glow:#b8c7b0;--ember:#e07a4f;
+ --c0:#3987e5;--c1:#d95926;--c2:#199e70;--c3:#c98500;--serif:'Instrument Serif',Georgia,serif}
+:root,:root[data-theme]{color-scheme:dark only}
+html{background:var(--bg);scroll-behavior:smooth;scroll-padding-top:64px}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'DM Sans',system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,p{margin:0}a{color:inherit}
+button{font:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.shell{max-width:1240px;margin:auto;padding:0 max(4vw,16px)}
+.masthead{display:flex;flex-wrap:wrap;gap:12px 40px;align-items:baseline;padding:26px 0 18px}
+.name{font:40px/1 var(--serif);letter-spacing:-1px;text-decoration:none}.name span{color:var(--glow)}
+.descriptor{font-size:13px;color:var(--muted);max-width:36ch}
+.boards{margin-left:auto;display:flex;gap:6px;font-size:14px}.boards a{text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:999px;color:var(--soft);min-height:44px;display:inline-flex;align-items:center}.boards a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hero{padding:28px 0 8px}
+.eyebrow{font-size:13px;color:var(--glow)}
+h1{font:clamp(48px,7vw,104px)/.96 var(--serif);letter-spacing:-.03em;margin:16px 0 22px;text-wrap:balance;max-width:14ch}
+h1 em,h2 em{color:var(--glow)}
+.dek{font-size:clamp(17px,1.7vw,21px);font-weight:300;color:var(--soft);max-width:44em}
+.trace{position:relative;height:clamp(200px,26vw,320px);margin:34px 0 0;border-block:1px solid var(--rule)}
+.trace svg{position:absolute;inset:0;width:100%;height:100%}
+.stagekeys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--rule)}
+.stagekeys div{padding:14px 20px 16px 0}.stagekeys div+div{padding-left:20px;border-left:1px solid var(--rule)}
+.stagekeys b{font:26px/1.1 var(--serif);font-weight:400;display:block}.stagekeys span{font-size:14px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:26px 0 0}
+.kpis div{padding:4px 20px 0 0}.kpis div+div{padding-left:20px;border-left:1px solid var(--rule)}
+.kpis strong{font:clamp(34px,4vw,52px)/1 var(--serif);font-weight:400;display:block}.kpis span{font-size:14px;color:var(--muted)}
+.contents{position:sticky;top:0;z-index:5;background:rgba(11,13,11,.93);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-block:1px solid var(--rule);margin-top:40px}
+.contents .shell{display:flex;gap:26px;overflow-x:auto;scrollbar-width:none;padding-block:12px;font-size:14px;color:var(--muted)}
+.contents a{flex:none;text-decoration:none;padding:6px 0;white-space:nowrap}.contents a:hover{color:var(--ink)}
+.chapter{padding:64px 0 24px;border-bottom:1px solid var(--rule)}
+h2{font:clamp(36px,4.6vw,60px)/1.04 var(--serif);letter-spacing:-.02em;margin:10px 0 18px;text-wrap:balance;max-width:20ch}
+h3{font:26px/1.15 var(--serif);font-weight:400;margin-bottom:8px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6vw;align-items:start}
+.copy{font-size:17px;line-height:1.75;font-weight:300;color:var(--soft);max-width:68ch}.copy p+p{margin-top:14px}.copy strong{color:var(--ink);font-weight:500}
+.panel{margin-top:40px}
+.panel header{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.panel header p{font-size:14px;color:var(--muted);max-width:62ch}
+.fig{position:relative;min-height:340px}.fig>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fig.short{min-height:240px}.fig.tall{min-height:420px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--soft);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.ramp{display:inline-block;width:120px;height:8px;border-radius:4px;vertical-align:middle;margin:0 8px}
+.profiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;margin-top:28px;background:var(--rule)}
+.profiles article{background:var(--bg);padding:22px 22px 18px;display:flex;flex-direction:column;gap:10px}
+.profiles .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px}
+.profiles .n{font-size:13px;color:var(--muted)}
+.profiles p{font-size:15px;color:var(--soft);line-height:1.6}
+.profiles dl{display:grid;grid-template-columns:auto auto;gap:2px 12px;font-size:13px;margin:0;color:var(--muted)}.profiles dd{margin:0;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.spark{height:56px;position:relative}.spark svg{position:absolute;inset:0;width:100%;height:100%}
+.sound{font-size:14px;color:var(--glow);border-top:1px solid var(--rule);padding-top:10px;margin-top:auto}
+.signals{margin-top:36px;border-top:1px solid var(--ink)}
+.signals li{display:grid;grid-template-columns:minmax(0,14em) minmax(0,1fr) minmax(0,1fr);gap:20px;padding:16px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.signals ol{list-style:none;margin:0;padding:0}.signals strong{font:22px/1.2 var(--serif);font-weight:400}.signals span{color:var(--soft);font-size:15px}.signals em{font-style:normal;color:var(--glow);font-size:15px}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 3.4em;gap:12px;align-items:center;font-size:14px;cursor:default;padding:3px 0}
+.bar .track{height:10px;background:#1a1d19;border-radius:0 4px 4px 0;position:relative}
+.bar .fill{position:absolute;inset:0 auto 0 0;border-radius:0 4px 4px 0}
+.bar b{font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
+.bar .lab{color:var(--soft)}
+.group{font-size:13px;color:var(--glow);margin:14px 0 4px}
+.heat{display:grid;gap:2px;font-size:13px}
+.heat div{padding:8px 6px;text-align:center;font-variant-numeric:tabular-nums}
+.heat .h{color:var(--muted);text-align:left;padding-left:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--soft);cursor:pointer;font-size:14px}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--rule)}
+.quotes blockquote{margin:0;background:var(--bg);padding:20px 22px;font:21px/1.3 var(--serif);color:var(--ink)}
+.banner{border:1px solid var(--ember);color:var(--ink);padding:16px 20px;margin-top:28px;font-size:15px;line-height:1.6;max-width:80ch}
+.banner b{color:var(--ember);font-weight:500}
+.trials{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px;background:var(--rule);margin-top:30px}
+.trials article{background:var(--bg);padding:22px}.trials h3{margin-bottom:4px}.trials p{font-size:14px;color:var(--soft)}.trials a{color:var(--glow)}
+.trials dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;font-size:14px;margin:12px 0 0}.trials dt{color:var(--muted)}.trials dd{margin:0;color:var(--ink)}
+@media(max-width:700px){.trials{grid-template-columns:minmax(0,1fr)}}
+.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 28px;margin:26px 0 8px}
+.controls label{font-size:13px;color:var(--muted);display:grid;gap:6px}
+.controls output{color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--glow);height:28px}
+select{font-size:16px;background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:6px;min-height:44px;padding:0 10px}
+.play{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:18px}
+.btn{min-height:44px;padding:0 22px;border-radius:999px;border:1px solid var(--glow);background:none;color:var(--ink);cursor:pointer;font-size:15px}
+.btn[aria-pressed=true]{background:var(--glow);color:var(--bg)}
+.small{font-size:13px;color:var(--muted)}
+.chain{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font:clamp(20px,2.2vw,28px)/1.2 var(--serif);margin-top:24px}
+.chain i{font-style:normal;color:var(--glow);font-family:'DM Sans';font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:24px}
+th{font-weight:400;color:var(--muted);text-align:left;font-size:13px;padding:10px 12px 10px 0;border-bottom:1px solid var(--ink)}
+td{padding:14px 12px 14px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--soft)}
+td:first-child{color:var(--ink)}
+.ev{white-space:nowrap;font-size:13px}.ev.d{color:var(--glow)}.ev.l{color:#d8b36a}.ev.c{color:var(--muted)}
+.plan{margin-top:30px;border-top:1px solid var(--ink)}
+.plan ol>li{display:grid;grid-template-columns:9em minmax(0,1fr) minmax(0,1.3fr);gap:24px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.plan ol{list-style:none;margin:0;padding:0}.plan time{color:var(--muted);font-size:14px;white-space:nowrap}.plan strong{font:26px/1.1 var(--serif);font-weight:400}.plan span{color:var(--soft);font-weight:300}
+.plan ul{margin:8px 0 0;padding-left:18px;color:var(--soft);font-weight:300}.plan ul li{margin:3px 0}
+.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--rule);margin-top:30px}
+.open div{background:var(--bg);padding:22px}.open p{color:var(--soft);font-size:15px}
+.tip{position:fixed;z-index:20;pointer-events:none;background:#1c201b;border:1px solid var(--rule);padding:8px 12px;font-size:13px;line-height:1.45;color:var(--ink);max-width:280px;opacity:0;transition:opacity .12s;border-radius:4px}
+details{margin-top:20px;color:var(--soft);font-size:15px}summary{cursor:pointer;color:var(--ink);min-height:44px;display:flex;align-items:center}
+footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between}
+.scroll{overflow-x:auto}
+@media(max-width:900px){.split,.grid2{grid-template-columns:minmax(0,1fr)}.profiles{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.quotes,.open{grid-template-columns:minmax(0,1fr)}.controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.signals li,.plan ol>li{grid-template-columns:minmax(0,1fr);gap:6px}.contents{position:static}.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:18px}.kpis div:nth-child(3){border-left:0;padding-left:0}}
+@media(max-width:600px){.profiles,.controls{grid-template-columns:minmax(0,1fr)}.stagekeys{grid-template-columns:minmax(0,1fr)}.stagekeys div+div{border-left:0;padding-left:0;border-top:1px solid var(--rule)}.bar{grid-template-columns:minmax(0,8em) minmax(0,1fr) 3em}.boards{margin-left:0}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--muted)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <a class="name" href="#top" id="top">Painwaves<span>.</span></a>
+    <p class="descriptor">Translating pain and relief into sound, from measured data. Producer's R&amp;D desk.</p>
+    <nav class="boards" aria-label="Boards"><a href="index.html" aria-current="page">Science board</a><a href="creative.html">Creative board</a></nav>
+  </header>
+  <section class="hero">
+    <p class="eyebrow">Science board · Phase 1–2 working draft · 21 November 2026</p>
+    <h1>The sound of pain, and <em>the way back to silence.</em></h1>
+    <p class="dek">Two Phase 1 data sources, read for the signals that can become sound: 678 people rating laser heat pain while their brain activity was recorded, and 600 people describing their own pain as a noise they can't escape. Phase 2 lays out how a drug's relief curve can carry the sound from pain back to an alpha-wave silence, with every step traceable to data.</p>
+    <div class="trace" id="trace" aria-label="A trace moving from a quiet alpha ripple, to pain pulses drawn from the measured brain response, to a fading relief"></div>
+    <div class="stagekeys">
+      <div><b>Silence</b><span>Eyes-closed alpha rhythm, 8–12 Hz: the personal baseline</span></div>
+      <div><b>Pain</b><span>Cz response to rated pain 10, repeated as a pulse</span></div>
+      <div><b>Relief</b><span>The pulse shrinking along the measured rating curve</span></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+</div>
+
+<nav class="contents" aria-label="Contents"><div class="shell">
+  <a href="#brain">1 · Pain in the brain</a><a href="#words">2 · Pain in words</a><a href="#relief">3 · Pain to relief</a><a href="#sound">4 · Signal to sound</a><a href="#plan">The plan</a><a href="#method">Method notes</a><a href="creative.html">Creative board →</a>
+</div></nav>
+
+<main class="shell">
+<section class="chapter" id="brain">
+  <p class="eyebrow">Phase 1 · Database 2 · EEG (XiangyueZhao/Supplement-Data)</p>
+  <div class="split">
+    <h2>The brain's answer gets <em>louder and faster</em> as pain rises.</h2>
+    <div class="copy">
+      <p>The repository pools <strong>nine laser-pain EEG experiments</strong> (Biosemi, ANT and Brain Products systems). It holds every single trial's laser energy and 0–10 pain rating, plus Cz waveforms averaged per person for each rating level and each laser energy.</p>
+      <p>At Cz, the response peak to peak (N2 to P2) rises in a near-straight line with the rating: about <strong id="slope"></strong> per rating point, r² <strong id="r2"></strong> across ten levels. The N2 also arrives earlier, from about 253 ms at rating 1 to about 207 ms at rating 10. That gives a defensible, measured map from a pain number to a neural signature.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <header><h3>Cz response by pain rating</h3><p>Group average across participants, baseline −500 to 0 ms, negative up (EEG convention). Hover for values.</p></header>
+    <div class="fig tall" id="erpFig"></div>
+    <div class="legend">Rating 1<span class="ramp" id="rampKey"></span>Rating 10</div>
+  </div>
+
+  <div class="grid2 panel">
+    <div><header><h3>N2–P2 amplitude vs rating</h3></header><div class="fig short" id="ampFig"></div><p class="small" style="margin-top:8px">Dots: group-average waveform. Line: linear fit. The fit is what Phase 2 uses to turn a rating into a neural loudness.</p></div>
+    <div><header><h3>Participants per experiment</h3></header><div class="bars" id="cohortBars" style="margin-top:14px"></div><p class="small" style="margin-top:10px">29,249 usable trials after removing 311 out-of-range ratings (above 10) and zero-energy catch trials.</p></div>
+  </div>
+
+  <div class="panel">
+    <header><h3>Four pain profiles across 678 people</h3><p>Each dot is a person, placed by two summary axes of their own rating pattern. Click a dot to see that person.</p></header>
+    <div class="fig" id="pcaFig"></div>
+    <div class="legend" id="profLegend"></div>
+    <p class="small" id="pick" style="margin-top:8px">Axis 1 ≈ louder, rising and stickier ratings. Axis 2 ≈ more trial-to-trial volatility.</p>
+  </div>
+  <div class="profiles" id="profCards"></div>
+  <div class="copy" style="margin-top:22px"><p>Profiles come from four features of each person's rating series, each compared with others in the same experiment so that equipment and protocol differences don't create fake groups: <strong>level</strong> (how much it hurts), <strong>volatility</strong> (scatter around their own trend), <strong>drift</strong> (habituation or sensitisation over the session) and <strong>stickiness</strong> (whether one trial's surprise carries into the next). Every experiment contributes to every profile. Treat these as regions of a continuum rather than fixed types: cluster separation is modest (silhouette 0.20), and resampling agrees on the grouping about half the time beyond chance (bootstrap ARI 0.48).</p></div>
+
+  <div class="signals"><ol id="eegSignals"></ol></div>
+</section>
+
+<section class="chapter" id="words">
+  <p class="eyebrow">Phase 1 · Database 1 · Hawking retest verbatims</p>
+  <div class="split">
+    <h2>People hear pain as <em>constant</em>, then as a <em>pulse.</em></h2>
+    <div class="copy">
+      <p>600 adults aged 18–75, in four test cells of 150, answered one question: <i>how would you describe your pain if it was a noise you can't escape?</i> Each answer is coded for time pattern, timbre, pitch, loudness and body cues (one answer can carry several codes).</p>
+      <p><strong>Constant</strong> is the dominant idea (27%). The next cluster is rhythmic: <strong>hammering, drums, pounding</strong>, and the pulse words almost always come with an impact sound. Ringing, buzzing and static, the tinnitus family, appear in about one answer in nine. 113 answers (19%) give no sound at all ("not sure", or a reaction to the ad), so read rates as a share of everyone.</p>
+    </div>
+  </div>
+  <div class="grid2 panel">
+    <div><header><h3>What pain sounds like</h3><p>Share of all 600 answers</p></header><div id="verbBars"></div></div>
+    <div>
+      <header><h3>How time and timbre combine</h3><p>Number of answers carrying both codes</p></header>
+      <div class="heat" id="heat"></div>
+      <header style="margin-top:34px"><h3>Age shifts the sound</h3><p>Share of answers by age group</p></header>
+      <div class="fig short" id="ageFig"></div>
+      <div class="legend" id="ageLegend"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <header><h3>In their words</h3><p>Pick a code to read answers carrying it.</p></header>
+    <div class="chips" id="qChips"></div>
+    <div class="quotes" id="quotes"></div>
+  </div>
+  <div class="signals"><ol id="verbSignals"></ol></div>
+</section>
+
+<section class="chapter" id="relief">
+  <p class="eyebrow">Phase 2 · Pain-to-relief, fitted to two clinical trials</p>
+  <div class="split">
+    <h2>A relief curve the sound can <em>travel along.</em></h2>
+    <div class="copy">
+      <p>The transition isn't invented: it chains measured relationships, each replaceable by better data.</p>
+      <div class="chain">Trial results <i>→</i> pain rating over time <i>→</i> neural response at that rating <i>→</i> sound <i>→</i> alpha silence</div>
+      <p style="margin-top:16px">Both trials test the same fixed combination of acetaminophen and naproxen sodium against placebo. They posted relief as <strong>time-weighted sums of pain-intensity difference (SPID)</strong> over time windows, not hour-by-hour scores. Each curve's shape therefore comes from known pharmacology (how fast each drug peaks in the blood and clears), and its height and onset are fitted so that the area under it matches each published SPID.</p>
+    </div>
+  </div>
+  <div class="trials" id="trialCards"></div>
+  <div class="controls" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)">
+    <label>Trial arm<select id="arm"></select></label>
+    <label>Starting pain <output id="o_r0"></output><input type="range" id="r0" min="5" max="10" step="0.5" value="7"></label>
+    <label>Compare with<select id="cmp"><option value="pbo">Placebo in the same trial</option><option value="none">Nothing</option></select></label>
+  </div>
+  <div class="panel" style="margin-top:20px"><header><h3 id="relTitle">Pain rating over 12 hours</h3><p id="reliefNote"></p></header><div class="fig short" id="relFig"></div>
+    <div class="legend"><span><i style="background:#e07a4f"></i>Selected arm</span><span><i style="background:#6b7066"></i>Placebo (dashed)</span><span><i style="background:#d8b36a"></i>30% and 50% relief</span><span><i style="background:#b8c7b0"></i>Median time to rescue medicine</span></div></div>
+  <div class="grid2 panel">
+    <div><header><h3>Neural loudness (N2–P2, µV)</h3></header><div class="fig short" id="ampTFig"></div></div>
+    <div><header><h3>Alpha share of the mix</h3></header><div class="fig short" id="alphaFig"></div></div>
+  </div>
+  <div class="play"><button class="btn" id="playBtn" aria-pressed="false">Listen to this curve · 30 s</button><span class="small">A rough sketch for Phase 3: a pulsing tone whose loudness follows the neural curve, crossfading into a soft 10 Hz alpha shimmer. Starts quiet.</span></div>
+  <div class="panel">
+    <header><h3>Fit check: published vs model</h3><p>SPID per window, in pain points × hours. Published values are the least-squares means from each trial's posted results.</p></header>
+    <div class="scroll"><table class="stack"><thead><tr><th>Trial · arm</th><th>Window</th><th style="text-align:right">Published SPID</th><th style="text-align:right">Model SPID</th><th>Fitted onset and peak</th></tr></thead><tbody id="fitRows"></tbody></table></div>
+  </div>
+  <div class="open" style="margin-top:28px">
+    <div><h3>What the fit can claim</h3><p>Each dental arm has two published windows and two fitted numbers (peak relief, onset delay), so its curve matches the published sums by construction. The shape between and within windows comes from pharmacology, not from the trial.</p></div>
+    <div><h3>Rescue medicine shapes the curves</h3><p>When a patient took rescue medicine, the trials froze their pain at the last score before it. The curves show relief as the trials counted it, with no credit for the rescue drug. In the bunion trial 81% of patients on the combination needed rescue within 12 hours, so its curve builds slowly and is the less certain of the two.</p></div>
+    <div><h3>Assumed, not published</h3><p>Average starting pain isn't in the posted results. Both trials required at least 5 of 10; 7 is assumed here and can be changed. Hour-by-hour pain scores would confirm or correct each curve's shape point by point.</p></div>
+  </div>
+</section>
+
+<section class="chapter" id="sound">
+  <p class="eyebrow">Phase 3 preview · Signal to sound</p>
+  <div class="split">
+    <h2>Every sound parameter <em>names its source.</em></h2>
+    <div class="copy"><p>Your tinnitus idea fits the data well: the most common words are constant ringing and buzzing, and pulse words cluster with throbbing and blood flow, which is the pattern of pulsatile tinnitus. The table separates what the data measures from what is a design choice, so the piece can be defended line by line.</p></div>
+  </div>
+  <div class="scroll"><table class="stack"><thead><tr><th>Signal</th><th>Source</th><th>Evidence</th><th>Sound parameter</th><th>Tinnitus voice</th></tr></thead><tbody id="mapRows"></tbody></table></div>
+  <p class="small" style="margin-top:12px">Measured: computed here from the data. Literature: direction is established in published research; size needs our own data. Design: a creative choice, labelled as such.</p>
+</section>
+
+<section class="chapter" id="plan">
+  <p class="eyebrow">The plan</p>
+  <h2>From two datasets to <em>a defensible score.</em></h2>
+  <div class="plan"><ol id="planRows"></ol></div>
+  <div class="open" id="openQs"></div>
+</section>
+
+<section class="chapter" id="method" style="border-bottom:0">
+  <p class="eyebrow">Method notes</p>
+  <div class="split">
+    <div class="copy">
+      <p><strong>EEG.</strong> Single-trial CSVs from all nine experiments; ratings above 10 and laser energy 0 dropped. For each person: mean rating, residual SD after removing the effect of laser energy and a linear session trend, the trend slope, and lag-1 autocorrelation of residuals. Features z-scored within experiment, clipped at ±3, k-means with k = 4 (silhouette 0.18–0.20 across k = 2–7, best at 4). Gain (rating change per joule) is shown for the 518 people who received more than one energy.</p>
+      <p><strong>Waveforms.</strong> all_CZ_rating.mat and all_CZ_power.mat (Cz, −1000 to 1999 ms, 1 kHz). Peaks: N2 minimum at 120–300 ms, P2 maximum at 250–500 ms, on the group mean. Per-person averages are pooled per rating level and aren't linked across levels, so neural profiles per person aren't possible from this release. ERP-power.mat in the repository is truncated and couldn't be read.</p>
+    </div>
+    <div class="copy">
+      <p><strong>Verbatims.</strong> Keyword-coded with transparent rules (one answer can carry several codes). This is a first pass: before Phase 3, two people should code a sample by hand to check agreement. The answers were collected after respondents saw ad concepts, so some reflect the ad's own language.</p>
+      <p><strong>Relief model.</strong> Fitted to the posted results of NCT05761574 (dental, single dose) and NCT05868122 (bunion, every 12 h for 48 h). Blood level per drug uses typical published oral values (acetaminophen peak 0.75 h, half-life 2.5 h; naproxen sodium peak 1 h, half-life 14 h). An effect-site delay and an Emax response (Hill 1.5) turn blood level into relief; the combination joins both drugs as independent effects. For each arm, peak relief and onset delay are grid-fitted so the area under the curve matches each published SPID window. Bunion placebo is fitted as natural post-surgical recovery (a power curve), and the drug’s relief is added on top. Pain = start × (1 − PID ÷ 7). Thresholds mark 30% and 50% reductions, the IMMPACT benchmarks for moderate and substantial improvement. Alpha share = 1 − rating/10.</p>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="shell"><span>Painwaves · Daniel Roversi · danielroversi.com</span><span>Data: github.com/XiangyueZhao/Supplement-Data · Hawking Retest Verbatims, Custom Question 1</span></footer>
+<div class="tip" id="tip" role="status"></div>
+
+<script>
+{
+const $=s=>document.querySelector(s), C=['var(--c0)','var(--c1)','var(--c2)','var(--c3)'], HEX=['#3987e5','#d95926','#199e70','#c98500'];
+const NAMES=['Fading','Quiet','Sustained','Crescendo'];
+const DESC=['Starts loud and volatile, then settles: ratings fall across the session as they habituate.','Lower pain, steady from trial to trial; each stimulus is judged on its own.','High pain that holds: little scatter, and each trial leans on the last.','Volatile and rising: ratings climb across the session as pain sensitises.'];
+const SOUNDS=['Bright attacks, long release, decrescendo','Soft, even pulses, close to the alpha bed','Dense drone with slow envelope, little variation','Accelerating, jittered pulses, crescendo'];
+const tip=$('#tip');
+const showTip=(e,h)=>{tip.innerHTML=h;tip.style.opacity=1;const x=Math.min(e.clientX+14,innerWidth-290),y=e.clientY+16;tip.style.left=x+'px';tip.style.top=(y+120>innerHeight?e.clientY-110:y)+'px'};
+const hideTip=()=>tip.style.opacity=0;
+const svgIn=(el,draw)=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');el.appendChild(s);const f=()=>{const W=el.clientWidth,H=el.clientHeight;if(!W)return;s.setAttribute('viewBox',`0 0 ${W} ${H}`);draw(s,W,H)};const ro=new ResizeObserver(f);ro.observe(el);return f};
+const sc=(d0,d1,r0,r1)=>v=>r0+(v-d0)/(d1-d0)*(r1-r0);
+const ember=i=>`hsl(18 ${30+i*6}% ${26+i*5.2}%)`;
+const fmt=(v,d=1)=>Number(v).toFixed(d);
+const axisTxt=(x,y,t,a='middle')=>`<text x="${x}" y="${y}" fill="#979b91" font-size="12" text-anchor="${a}">${t}</text>`;
+
+fetch('data.json').then(r=>r.json()).then(D=>{
+  // KPIs
+  $('#kpis').innerHTML=[[D.nsub,'people with EEG and ratings'],[D.ntr.toLocaleString(),'rated pain stimuli'],['9','experiments, 3 EEG systems'],[D.verb.n,'people describing pain as sound']].map(k=>`<div><strong>${k[0]}</strong><span>${k[1]}</span></div>`).join('');
+  $('#slope').textContent=fmt(D.fit.slope,2)+' µV'; $('#r2').textContent=fmt(D.fit.r2,2);
+  const E=D.erp,T=E.t;
+  // Hero trace
+  svgIn($('#trace'),(s,W,H)=>{
+    const w10=E.rating[9].wave, n=w10.length, mid=H*.5, k=H*.022;
+    let p=[];const third=W/3;
+    for(let x=0;x<=third;x+=2){p.push([x,mid+Math.sin(x/third*Math.PI*2*10)*H*.02*(0.6+0.4*Math.sin(x/40))])}
+    const pulses=3;for(let j=0;j<pulses;j++){for(let i=0;i<n;i+=2){p.push([third+(j+i/n)*third/pulses,mid+w10[i]*k])}}
+    const relief=4;for(let j=0;j<relief;j++){const g=Math.pow(.42,j+1)+.04;for(let i=0;i<n;i+=3){const x=2*third+(j+i/n)*third/relief;const a=1-(j*n+i)/(relief*n);p.push([x,mid+w10[i]*k*g*(a)+Math.sin(x/third*Math.PI*20)*H*.02*(1-a)])}}
+    const d='M'+p.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join('L');
+    s.innerHTML=`<defs><linearGradient id="tg" x1="0" x2="1"><stop offset="0" stop-color="#b8c7b0"/><stop offset=".36" stop-color="#e07a4f"/><stop offset=".62" stop-color="#e07a4f"/><stop offset="1" stop-color="#b8c7b0"/></linearGradient></defs>
+      <line x1="${third}" x2="${third}" y1="0" y2="${H}" stroke="#2a2e29"/><line x1="${2*third}" x2="${2*third}" y1="0" y2="${H}" stroke="#2a2e29"/>
+      <path d="${d}" fill="none" stroke="url(#tg)" stroke-width="2" stroke-linejoin="round"><animate attributeName="stroke-dasharray" from="0 ${W*6}" to="${W*6} 0" dur="3.5s" fill="freeze"/></path>`;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) s.querySelector('animate')?.remove();
+  });
+  // ERP figure
+  $('#rampKey').style.background=`linear-gradient(90deg,${ember(0)},${ember(9)})`;
+  svgIn($('#erpFig'),(s,W,H)=>{
+    const m={l:44,r:14,t:14,b:30},x=sc(-300,900,m.l,W-m.r),y=sc(-12,9,m.t,H-m.b);
+    let g='';for(const v of [-10,-5,0,5]){g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="#20241f"/>`+axisTxt(m.l-8,y(v)+4,v,'end')}
+    for(const v of [-200,0,200,400,600,800]){if(W<520&&v%400)continue;g+=axisTxt(x(v),H-8,v+(v==800?' ms':''))}
+    g+=`<line x1="${x(0)}" x2="${x(0)}" y1="${m.t}" y2="${H-m.b}" stroke="#3a3f39" stroke-dasharray="3 4"/>`+axisTxt(x(0)+6,m.t+10,'laser','start');
+    g+=axisTxt(m.l-8,m.t+2,'µV','end');
+    E.rating.forEach((r,i)=>{g+=`<path d="M${r.wave.map((v,j)=>x(T[j]).toFixed(1)+','+y(v).toFixed(1)).join('L')}" fill="none" stroke="${ember(i)}" stroke-width="${i==9?2.4:1.6}"/>`});
+    const r9=E.rating[9];g+=`<text x="${x(r9.n2lat)+8}" y="${y(r9.n2)+4}" fill="#b9bcb3" font-size="12">N2</text><text x="${x(r9.p2lat)+8}" y="${y(r9.p2)+12}" fill="#b9bcb3" font-size="12">P2</text>`;
+    g+=`<line id="xh" y1="${m.t}" y2="${H-m.b}" stroke="#b8c7b0" opacity="0"/><rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent" id="hit"/>`;
+    s.innerHTML=g;
+    const hit=s.querySelector('#hit'),xh=s.querySelector('#xh');
+    hit.onmousemove=e=>{const b=s.getBoundingClientRect(),px=(e.clientX-b.left)*W/b.width,tv=-300+(px-m.l)/(W-m.l-m.r)*1200;let j=0;while(j<T.length-1&&T[j]<tv)j++;xh.setAttribute('x1',x(T[j]));xh.setAttribute('x2',x(T[j]));xh.setAttribute('opacity',.5);
+      showTip(e,`<b>${T[j]} ms</b><br>`+E.rating.map((r,i)=>`<span style="color:${ember(i)}">●</span> rating ${r.label}: ${fmt(r.wave[j])} µV`).filter((_,i)=>i%3==0||i==9).join('<br>'))};
+    hit.onmouseleave=()=>{hideTip();xh.setAttribute('opacity',0)};
+  });
+  // amp vs rating
+  svgIn($('#ampFig'),(s,W,H)=>{
+    const m={l:40,r:14,t:12,b:30},x=sc(0,10,m.l,W-m.r),y=sc(0,20,H-m.b,m.t);let g='';
+    for(const v of [0,5,10,15,20]){g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="#20241f"/>`+axisTxt(m.l-8,y(v)+4,v,'end')}
+    for(const v of [0,2,4,6,8,10])g+=axisTxt(x(v),H-8,v==10?'10 rating':v);
+    g+=`<line x1="${x(0)}" y1="${y(D.fit.icpt)}" x2="${x(10)}" y2="${y(D.fit.icpt+10*D.fit.slope)}" stroke="#b8c7b0" stroke-width="2"/>`;
+    E.rating.forEach((r,i)=>{const a=r.p2-r.n2;g+=`<circle cx="${x(+r.label)}" cy="${y(a)}" r="6" fill="${ember(i)}" stroke="#0b0d0b" stroke-width="2" data-t="Rating ${r.label}: N2–P2 ${fmt(a)} µV · N2 at ${r.n2lat} ms · ${r.N} people"/>`});
+    s.innerHTML=g;s.querySelectorAll('circle').forEach(c=>{c.onmousemove=e=>showTip(e,c.dataset.t);c.onmouseleave=hideTip});
+  });
+  // cohorts
+  const mx=Math.max(...D.cohort.map(c=>c.subj));
+  $('#cohortBars').innerHTML=D.cohort.sort((a,b)=>b.subj-a.subj).map(c=>`<div class="bar" title="${c.trials} trials"><span class="lab">${c.exp.replace(/^(\d+)By/,'Exp. $1 · ')}</span><span class="track"><span class="fill" style="width:${c.subj/mx*100}%;background:#8a9784"></span></span><b>${c.subj}</b></div>`).join('');
+  // PCA scatter
+  const P=D.pts;
+  $('#profLegend').innerHTML=D.prof.map(p=>`<span><i style="background:${C[p.c]}"></i>${NAMES[p.c]} · ${p.n}</span>`).join('');
+  svgIn($('#pcaFig'),(s,W,H)=>{
+    const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),m={l:20,r:20,t:14,b:26};
+    const x=sc(Math.min(...xs)-.2,Math.max(...xs)+.2,m.l,W-m.r),y=sc(Math.min(...ys)-.2,Math.max(...ys)+.2,H-m.b,m.t);
+    let g=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(0)}" y2="${y(0)}" stroke="#20241f"/><line y1="${m.t}" y2="${H-m.b}" x1="${x(0)}" x2="${x(0)}" stroke="#20241f"/>`;
+    g+=axisTxt(W-m.r,H-6,'louder, rising, stickier →','end')+axisTxt(m.l,m.t+4,'↑ more volatile','start');
+    g+=P.map((p,i)=>`<circle cx="${x(p[0]).toFixed(1)}" cy="${y(p[1]).toFixed(1)}" r="4.5" fill="${C[p[2]]}" fill-opacity=".85" stroke="#0b0d0b" stroke-width="1.5" data-i="${i}"/>`).join('');
+    D.prof.forEach(pr=>{const pts=P.filter(p=>p[2]==pr.c),cx=pts.reduce((a,p)=>a+p[0],0)/pts.length,cy=pts.reduce((a,p)=>a+p[1],0)/pts.length;g+=`<text x="${x(cx)}" y="${y(cy)}" text-anchor="middle" font-family="Instrument Serif" font-size="22" fill="#e9ebe6" stroke="#0b0d0b" stroke-width="5" paint-order="stroke">${NAMES[pr.c]}</text>`});
+    s.innerHTML=g;
+    s.querySelectorAll('circle').forEach(c=>{const p=P[+c.dataset.i];const h=`<b>${NAMES[p[2]]}</b> · ${p[3]} #${p[4]}<br>mean rating ${p[5]} · volatility ${p[6]}<br>drift ${p[7]} · stickiness ${p[8]}`;c.onmousemove=e=>showTip(e,h);c.onmouseleave=hideTip;c.onclick=()=>{$('#pick').innerHTML=`Selected: <b style="color:var(--ink)">${NAMES[p[2]]}</b>, experiment ${p[3]}, participant ${p[4]} — mean rating ${p[5]}, volatility ${p[6]}, session drift ${p[7]}, stickiness ${p[8]}.`}});
+  });
+  // profile cards
+  $('#profCards').innerHTML=D.prof.map(p=>`<article><h3><span class="dot" style="background:${C[p.c]}"></span>${NAMES[p.c]}</h3><span class="n">${p.n} people · ${Math.round(p.n/D.nsub*100)}%</span><p>${DESC[p.c]}</p>
+    <div class="spark" data-c="${p.c}"></div><span class="n">Average shape across the session, start to end</span>
+    <dl><dt>Mean rating</dt><dd>${fmt(p.level)}</dd><dt>Trials rated 7+</dt><dd>${p.high}%</dd><dt>Volatility (SD)</dt><dd>${fmt(p.noise,2)}</dd><dt>Session drift</dt><dd>${p.drift>0?'+':''}${fmt(p.drift,2)}</dd><dt>Stickiness</dt><dd>${fmt(p.lag1,2)}</dd></dl>
+    <p class="sound">Sound: ${SOUNDS[p.c]}</p></article>`).join('');
+  document.querySelectorAll('.spark').forEach(el=>{const p=D.prof[+el.dataset.c],q=p.dec;svgIn(el,(s,W,H)=>{const x=sc(0,q.length-1,4,W-4),y=sc(-1.2,1.2,H-4,4);s.innerHTML=`<line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="#20241f"/><path d="M${q.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join('L')}" fill="none" stroke="${HEX[p.c]}" stroke-width="2"/>`+q.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${HEX[p.c]}"/>`).join('')})});
+  const sig=(rows,el)=>$(el).innerHTML=rows.map(r=>`<li><strong>${r[0]}</strong><span>${r[1]}</span><em>${r[2]}</em></li>`).join('');
+  sig([['N2–P2 amplitude','Grows ~1.8 µV per rating point; the most robust pain signal in the set.','→ loudness / intensity of each pulse'],
+       ['N2 latency','About 45 ms earlier at high pain than low.','→ attack sharpness, pulse urgency'],
+       ['Waveform shape','A ~300 ms negative–positive swing after each stimulus.','→ a measured envelope or wavetable for the pulse'],
+       ['Volatility','Trial-to-trial scatter, 1.1 to 1.7 rating points by profile.','→ jitter in pitch, timing and gain'],
+       ['Session drift','Habituation vs sensitisation, ±1.5 to 2 points across a session.','→ long crescendo or decrescendo'],
+       ['Stickiness','Whether surprises carry over to the next trial.','→ smoothing of the envelope (inertia)']],'#eegSignals');
+  // verbatims bars
+  const V=D.verb,lab={'time:constant':'Constant, never stops','time:pulsing':'Pulsing, throbbing, beating','time:waves':'Waves, surges, building','time:sudden':'Sudden, stabbing, shocks','timbre:impact':'Impact: hammer, drum','timbre:buzz':'Buzz, static, insects','timbre:screech':'Screech, nails, scream','timbre:drone':'Hum, drone, engine','timbre:chaos':'Cacophony, traffic, trains','timbre:ringing':'Ringing, bells, whine','timbre:alarm':'Siren, alarm, horn','pitch:high':'High, shrill, sharp','pitch:low':'Low, deep, dull','loud:loud':'Loud','loud:quiet':'Quiet, background','body:blood':'Heartbeat, blood, throb','body:tinnitus':'Tinnitus, ringing ears','tactile':'Touch: knives, burning, pressure'};
+  const groups=[['Time pattern','time'],['Timbre','timbre'],['Pitch and loudness',['pitch','loud']],['Body',['body','tactile']]];
+  const vmax=30;
+  $('#verbBars').innerHTML=groups.map(([gname,pre])=>{const keys=Object.keys(V.overall).filter(k=>[].concat(pre).some(p=>k.startsWith(p))).sort((a,b)=>V.overall[b]-V.overall[a]);
+    return `<p class="group">${gname}</p><div class="bars">`+keys.map(k=>`<div class="bar" data-k="${k}"><span class="lab">${lab[k]}</span><span class="track"><span class="fill" style="width:${V.overall[k]/vmax*100}%;background:${k.startsWith('time')?'#b8c7b0':'#e07a4f'}"></span></span><b>${fmt(V.overall[k])}%</b></div>`).join('')+'</div>'}).join('');
+  document.querySelectorAll('#verbBars .bar').forEach(b=>{const k=b.dataset.k;b.onmousemove=e=>showTip(e,`<b>${lab[k]}</b><br>Women ${fmt(V.bysex.Female[k])}% · Men ${fmt(V.bysex.Male[k])}%<br>`+Object.entries(V.byage).map(([a,v])=>`${a}: ${fmt(v[k],0)}%`).join(' · '));b.onmouseleave=hideTip});
+  // heat
+  const tm=Object.keys(V.co),tb=Object.keys(V.co[tm[0]]),hmax=48;
+  $('#heat').style.gridTemplateColumns=`minmax(0,7em) repeat(${tb.length},minmax(0,1fr))`;
+  $('#heat').innerHTML='<div class="h"></div>'+tb.map(t=>`<div class="h" style="text-align:center">${t.split(':')[1]}</div>`).join('')+tm.map(a=>`<div class="h">${a.split(':')[1]}</div>`+tb.map(b=>{const v=V.co[a][b];return `<div style="background:rgba(224,122,79,${(v/hmax*.85).toFixed(2)});color:${v/hmax>.5?'#0b0d0b':'#e9ebe6'}" title="${lab[a]} + ${lab[b]}: ${v} answers">${v}</div>`}).join('')).join('');
+  // age dot plot
+  const AK=['time:constant','time:pulsing','timbre:impact','pitch:high','timbre:buzz','body:blood'],ages=Object.keys(V.byage),ageCol=['#86b6ef','#3987e5','#1c5cab','#d8dde6'];
+  $('#ageLegend').innerHTML=ages.map((a,i)=>`<span><i style="background:${['#86b6ef','#5598e7','#256abf','#e9ebe6'][i]}"></i>${a}</span>`).join('');
+  svgIn($('#ageFig'),(s,W,H)=>{const m={l:W<520?96:150,r:16,t:6,b:22},x=sc(0,40,m.l,W-m.r),rowH=(H-m.t-m.b)/AK.length;let g='';
+    for(const v of [0,10,20,30,40])g+=`<line x1="${x(v)}" x2="${x(v)}" y1="${m.t}" y2="${H-m.b}" stroke="#20241f"/>`+axisTxt(x(v),H-6,v+(v==40?'%':''));
+    AK.forEach((k,r)=>{const yy=m.t+rowH*(r+.5),vals=ages.map(a=>V.byage[a][k]);g+=`<text x="${m.l-10}" y="${yy+4}" fill="#b9bcb3" font-size="12" text-anchor="end">${(W<520?lab[k].split(/[,:]/)[0]:lab[k])}</text><line x1="${x(Math.min(...vals))}" x2="${x(Math.max(...vals))}" y1="${yy}" y2="${yy}" stroke="#3a3f39" stroke-width="2"/>`;
+      vals.forEach((v,i)=>g+=`<circle cx="${x(v)}" cy="${yy}" r="6" fill="${['#86b6ef','#5598e7','#256abf','#e9ebe6'][i]}" stroke="#0b0d0b" stroke-width="2" data-t="${lab[k]} · ${ages[i]}: ${fmt(v)}%"/>`)});
+    s.innerHTML=g;s.querySelectorAll('circle').forEach(c=>{c.onmousemove=e=>showTip(e,c.dataset.t);c.onmouseleave=hideTip})});
+  // quotes
+  const QK=['time:constant','time:pulsing','time:waves','time:sudden','timbre:ringing','timbre:buzz','timbre:drone','timbre:screech','body:blood','body:tinnitus'];
+  const setQ=k=>{document.querySelectorAll('#qChips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.k==k));$('#quotes').innerHTML=V.quotes[k].slice(0,6).map(q=>`<blockquote>“${q.replace(/</g,'&lt;')}”</blockquote>`).join('')};
+  $('#qChips').innerHTML=QK.map(k=>`<button class="chip" data-k="${k}" aria-pressed="false">${lab[k].split(',')[0]}</button>`).join('');
+  document.querySelectorAll('#qChips .chip').forEach(c=>c.onclick=()=>setQ(c.dataset.k));setQ('body:tinnitus');
+  sig([['Time pattern','Constant 27%, pulsing 13%, sudden 8%, waves 8%.','→ the modulation type: drone, AM pulse, transients, slow swells'],
+       ['Pulse + impact','48 of the 80 pulse answers are percussive: hammers, drums, pounding.','→ pulse attacks with a struck, low-mid body'],
+       ['Tinnitus family','Ringing, buzz and static in about 1 answer in 9; 14 people name tinnitus or ringing ears.','→ a narrow-band high tone and band-limited noise bed'],
+       ['Heartbeat and blood','Throbbing, pulse, blood flow; rises with age, from 1% to 7%.','→ pulsatile tinnitus locked to a heart-rate pulse'],
+       ['Age','Under 50s hear it higher and buzzier; over 50s hear it as constant.','→ age-tuned presets for pitch and density']],'#verbSignals');
+  // Phase 2: fitted trial curves
+  const TR=D.trials,B0=TR.baseline_assumed,ARMS=[];
+  ['dental','bunion'].forEach(k=>Object.entries(TR[k].arms).forEach(([a,v])=>ARMS.push({key:k+'.'+a,trial:k,arm:a,v})));
+  const TL={dental:'Dental surgery',bunion:'Bunion surgery'};
+  $('#arm').innerHTML=['dental','bunion'].map(k=>`<optgroup label="${TL[k]} · ${TR[k].nct}">`+ARMS.filter(x=>x.trial==k).map(x=>`<option value="${x.key}">${TL[k]} · ${x.v.label}</option>`).join('')+'</optgroup>').join('');
+  const fmtMin=m=>m==null?'over 12 h':m>=90?fmt(m/60,1)+' h':Math.round(m)+' min';
+  $('#trialCards').innerHTML=['dental','bunion'].map(k=>{const t=TR[k];return `<article><h3>${TL[k]}</h3><p>${t.title}</p><dl><dt>Registry</dt><dd><a href="https://clinicaltrials.gov/study/${t.nct}">${t.nct}</a></dd><dt>People</dt><dd>${t.n} randomised</dd><dt>Age</dt><dd>${t.age}</dd><dt>Women</dt><dd>${t.female}%</dd><dt>Arms</dt><dd>${Object.values(t.arms).map(x=>x.label).join(', ')}</dd></dl></article>`}).join('');
+  let curve=[],cmp=[],TH=12,armSel=ARMS.find(x=>x.key=='dental.combo')||ARMS[0];
+  const build=(x,r0)=>{const st=TR[x.trial].step;return x.v.pid.map((p,i)=>{const r=Math.max(0,r0*(1-p/B0));return{t:i*st,r,amp:D.fit.slope*r+D.fit.icpt,alpha:1-r/10}})};
+  const lineFig=(el,key,ymax,fmtY,extra)=>svgIn(el,(s,W,H)=>{if(!curve.length)return;const m={l:40,r:14,t:12,b:28},x=sc(0,TH,m.l,W-m.r),y=sc(0,ymax,H-m.b,m.t);let g='';
+    for(let v=0;v<=ymax+1e-9;v+=ymax/4)g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="#20241f"/>`+axisTxt(m.l-8,y(v)+4,fmtY(v),'end');
+    const ticks=TH==12?[0,2,4,6,8,10,12]:[0,12,24,36,48];for(const v of ticks)if(W>=520||TH==48||v%4==0)g+=axisTxt(x(v),H-8,v+(v==TH?' h':''));
+    if(extra)g+=extra(x,y,m,W,H);
+    if(cmp.length)g+=`<path d="M${cmp.map(q=>x(q.t).toFixed(1)+','+y(q[key]).toFixed(1)).join('L')}" fill="none" stroke="#6b7066" stroke-width="1.5" stroke-dasharray="5 5"/>`;
+    g+=`<path d="M${curve.map(q=>x(q.t).toFixed(1)+','+y(q[key]).toFixed(1)).join('L')}" fill="none" stroke="${key=='alpha'?'#b8c7b0':'#e07a4f'}" stroke-width="2"/>`;
+    g+=`<line class="xh" y1="${m.t}" y2="${H-m.b}" stroke="#b8c7b0" opacity="0"/><rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent" class="hit"/>`;
+    s.innerHTML=g;const hit=s.querySelector('.hit'),xh=s.querySelector('.xh');
+    hit.onmousemove=e=>{const b=s.getBoundingClientRect(),px=(e.clientX-b.left)*W/b.width,tv=Math.max(0,Math.min(TH,(px-m.l)/(W-m.l-m.r)*TH)),q=curve[Math.min(curve.length-1,Math.round(tv/.05))];xh.setAttribute('x1',x(q.t));xh.setAttribute('x2',x(q.t));xh.setAttribute('opacity',.5);
+      showTip(e,`<b>${fmt(q.t,2)} h</b><br>Pain ${fmt(q.r)} / 10<br>Neural loudness ${fmt(q.amp)} µV<br>Alpha share ${Math.round(q.alpha*100)}%`)};hit.onmouseleave=()=>{hideTip();xh.setAttribute('opacity',0)}});
+  const p0={r0:7};
+  const rel=lineFig($('#relFig'),'r',10,v=>v,(x,y,m,W,H)=>{const r0=p0.r0;let g=[[.7,'30% relief'],[.5,'50% relief']].map(([f,t])=>`<line x1="${m.l}" x2="${W-m.r}" y1="${y(r0*f)}" y2="${y(r0*f)}" stroke="#d8b36a" stroke-dasharray="4 5" opacity=".7"/><text x="${W-m.r}" y="${y(r0*f)-6}" fill="#d8b36a" font-size="12" text-anchor="end">${t}</text>`).join('');
+    const rm=armSel.v.rescue;if(rm!=null&&rm/60<=TH){const X=x(rm/60);g+=`<line x1="${X}" x2="${X}" y1="${m.t}" y2="${H-m.b}" stroke="#b8c7b0" stroke-width="1.5"/><text x="${X+6}" y="${m.t+12}" fill="#b8c7b0" font-size="12">median rescue ${fmtMin(rm)}</text>`}
+    if(armSel.trial=='bunion')g+=TR.bunion.doses.map(d=>`<text x="${x(d)+3}" y="${H-m.b-6}" fill="#979b91" font-size="11">dose</text>`).join('');return g});
+  const amp=lineFig($('#ampTFig'),'amp',20,v=>v);
+  const alp=lineFig($('#alphaFig'),'alpha',1,v=>Math.round(v*100)+'%');
+  const update=()=>{p0.r0=+$('#r0').value;$('#o_r0').textContent=p0.r0+' / 10';armSel=ARMS.find(x=>x.key==$('#arm').value);TH=TR[armSel.trial].T;
+    curve=build(armSel,p0.r0);const pb=ARMS.find(x=>x.trial==armSel.trial&&x.arm=='pbo');cmp=($('#cmp').value=='pbo'&&armSel.arm!='pbo')?build(pb,p0.r0):[];
+    $('#relTitle').textContent=`Pain rating over ${TH} hours`;rel();amp();alp();
+    const t30=curve.find(q=>q.r<=p0.r0*.7),t50=curve.find(q=>q.r<=p0.r0*.5),low=curve.reduce((a,q)=>q.r<a.r?q:a);
+    $('#reliefNote').textContent=`${armSel.v.label}, n=${armSel.v.n}. Model: 30% relief at ${t30?fmt(t30.t,1)+' h':'not reached'}; 50% at ${t50?fmt(t50.t,1)+' h':'not reached'}; lowest pain ${fmt(low.r)} at ${fmt(low.t,1)} h. Published: ${fmt(armSel.v.resc12,0)}% took rescue medicine within 12 h.`};
+  $('#arm').value='dental.combo';$('#r0').oninput=update;$('#arm').onchange=update;$('#cmp').onchange=update;update();
+  $('#fitRows').innerHTML=ARMS.map(x=>x.v.w.map((w,j)=>`<tr><td>${j?'':TL[x.trial]+' · '+x.v.label}</td><td>${w[0]}–${w[1]} h</td><td style="text-align:right">${fmt(w[2])}${(x.trial=='dental'||j==0)&&x.v.se[j]!=null?' ± '+fmt(x.v.se[j],1):''}</td><td style="text-align:right">${fmt(x.v.fit[j])}</td><td>${j?'':(x.v.par.lag_h!=null?`onset delay ${Math.round(x.v.par.lag_h*60)} min, peak relief ${fmt(x.v.par.emax_pts)} pts`:x.trial=='bunion'?'natural post-surgical recovery':'small, slow placebo response')}</td></tr>`).join('')).join('');
+  // audio sketch
+  let ac=null,stopAt=0;
+  $('#playBtn').onclick=async()=>{const b=$('#playBtn');if(ac){ac.close();ac=null;b.setAttribute('aria-pressed','false');b.textContent='Listen to this curve · 30 s';return}
+    try{ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume()}catch(e){b.textContent='Audio unavailable here';return}
+    b.setAttribute('aria-pressed','true');b.textContent='Stop';
+    const now=ac.currentTime+.1,dur=30,master=ac.createGain();master.gain.value=.22;master.connect(ac.destination);
+    const tone=ac.createOscillator();tone.frequency.value=3800;const tg=ac.createGain();tg.gain.value=0;tone.connect(tg);tg.connect(master);
+    const nb=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+    const noise=ac.createBufferSource();noise.buffer=nb;noise.loop=true;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;const ng=ac.createGain();ng.gain.value=0;noise.connect(lp);lp.connect(ng);ng.connect(master);
+    const pad=ac.createOscillator();pad.frequency.value=220;const pg=ac.createGain();pg.gain.value=0;const trem=ac.createOscillator();trem.frequency.value=10;const tremG=ac.createGain();tremG.gain.value=0;trem.connect(tremG);tremG.connect(pg.gain);pad.connect(pg);pg.connect(master);
+    const amax=D.fit.slope*10+D.fit.icpt;
+    curve.forEach((q,i)=>{const t=now+q.t/TH*dur,a=q.amp/amax;tg.gain.linearRampToValueAtTime(.05*a,t);pg.gain.linearRampToValueAtTime(.12*q.alpha*q.alpha,t);tremG.gain.linearRampToValueAtTime(.06*q.alpha*q.alpha,t)});
+    for(let t=0;t<dur;t+=0.9){const q=curve[Math.min(curve.length-1,Math.round(t/dur*TH/.05))],a=q.amp/amax,st=now+t;ng.gain.setValueAtTime(0,st);ng.gain.linearRampToValueAtTime(1.4*a,st+.03);ng.gain.exponentialRampToValueAtTime(.001,st+.35)}
+    [tone,noise,pad,trem].forEach(n=>{n.start(now);n.stop(now+dur+.5)});
+    master.gain.setValueAtTime(.22,now+dur);master.gain.linearRampToValueAtTime(0,now+dur+.4);
+    tone.onended=()=>{if(ac){ac.close();ac=null;b.setAttribute('aria-pressed','false');b.textContent='Listen to this curve · 30 s'}}};
+  // mapping table
+  const MAP=[['Pain rating, moment to moment','Trial SPID windows, fitted PK/Emax curve','d','Master intensity of the pain layer','Overall level of ring and pulse'],
+    ['N2–P2 amplitude','EEG, 678 people, rating fit','d','Pulse loudness, 0 to full scale','Pulse depth on the blood-flow noise'],
+    ['N2 latency','EEG, group waveforms','d','Attack time of each pulse','Sharpness of each heartbeat thump'],
+    ['Cz waveform shape','EEG, rating 1–10 averages','d','Envelope or wavetable of a pulse','The thump itself, time-stretched'],
+    ['Profile: volatility','EEG ratings, per person','d','Random jitter on pitch, gain, timing','Wavering of the ringing tone'],
+    ['Profile: drift','EEG ratings, per person','d','Slow crescendo or decrescendo','Ring growing or fading over the piece'],
+    ['Profile: stickiness','EEG ratings, per person','d','Envelope smoothing (inertia)','How long a flare lingers'],
+    ['Time pattern words','Verbatims, 600 people','d','Modulation type: drone / pulse / swell / transient','Steady ring vs pulsatile ring'],
+    ['Timbre and pitch words','Verbatims, 600 people','d','Oscillator and noise choice, register','Tone band (high ring) vs low rumble'],
+    ['Alpha rhythm, 8–12 Hz','Resting eyes-closed EEG (to collect)','l','Silence: soft 10 Hz shimmer, the baseline bed','The ring dissolving into the bed'],
+    ['Pulse rate','Heart rate (not in either dataset)','c','Tempo of the pulse layer','Heartbeat rhythm of pulsatile tinnitus']];
+  const EV={d:'Measured',l:'Literature',c:'Design'};
+  $('#mapRows').innerHTML=MAP.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><span class="ev ${r[2]}">${EV[r[2]]}</span></td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('');
+  document.querySelectorAll('.stack').forEach(t=>{const h=[...t.rows[0].cells].map(c=>c.textContent);[...t.tBodies[0].rows].forEach(r=>[...r.cells].forEach((c,i)=>c.dataset.l=h[i]))});
+  // plan
+  const PLAN=[['Weeks 1–2','Lock Phase 1 data','Freeze the EEG analysis and verbatim codes so later phases build on stable numbers.',['Two people hand-code 150 verbatims; check agreement against the keyword rules','Write the EEG feature pipeline as a reusable script (done in draft here)','Confirm with the dataset authors how to cite and use it']],
+    ['Weeks 2–4','Add the silence baseline','Collect or source eyes-closed resting EEG so silence is personal, not assumed.',['Option A: record 3 to 5 minutes eyes-closed per participant, before the pain task','Option B: an open resting-state dataset for a reference alpha range','Extract alpha peak frequency and power per person as the silence signature']],
+    ['Weeks 3–5','Fit the two drug studies','First pass done from the posted results; next, confirm the shapes with hour-by-hour scores.',['Done: curves for all six arms fitted to the published SPID windows','Request per-timepoint pain means (clinical study reports or the sponsor)','Add uncertainty bands once per-timepoint spread is available']],
+    ['Weeks 5–7','Sound engine prototype','Build the Phase 3 instrument with every parameter wired to a named signal.',['Tinnitus voices: high ring, band-limited buzz, pulsatile blood-flow noise','Four profile presets (Fading, Quiet, Sustained, Crescendo) and age-tuned timbres','The silence bed: alpha-rate shimmer that takes over as relief reaches its peak']],
+    ['Weeks 7–9','Validate with listeners','Check that the sound reads as pain, and relief as relief.',['Play-back test: listeners rate pain and relief they hear, compared with the data curve','Include people living with tinnitus; check the sound is not distressing','Science advisor sign-off on every Measured and Literature claim']],
+    ['Week 10','Publish the platform','A shareable version for scientists, brand and creative partners.',['This page, plus the sound engine and a downloadable signal map','A one-page claims sheet: what the data supports and what is design']]];
+  $('#planRows').innerHTML=PLAN.map(p=>`<li><time>${p[0]}</time><strong>${p[1]}</strong><span>${p[2]}<ul>${p[3].map(x=>`<li>${x}</li>`).join('')}</ul></span></li>`).join('');
+  $('#openQs').innerHTML=[['Hour-by-hour pain scores','The trials posted only window sums. Per-timepoint means, in each trial\'s clinical study report or from the sponsor, would confirm each curve\'s shape directly.'],['Single-trial EEG','The repository has per-person averages, not raw trials. Gamma activity (a strong per-person pain marker in published work) and per-person neural profiles need the raw recordings from the authors.'],['Claims and ethics','If this becomes brand work for an analgesic, relief curves must match what the studies show, and the piece shouldn\'t imply EEG measures any one person\'s pain.']].map(q=>`<div><h3>${q[0]}</h3><p>${q[1]}</p></div>`).join('');
+}).catch(err=>{document.querySelector('#kpis').innerHTML='<p class="small">The data file failed to load: '+err.message+'</p>'});
+}
+</script>
+</body>
+</html>

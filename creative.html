@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark only">
+<title>Painwaves — Creative board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a studio light-table at night: quiet, exact, every motion owed to a number.
+   IDEA: a mood board that comes alive — pick a reference image and it dissolves into particles that hurt, then heal.
+   PICTURE: the live particle stage, built from the chosen image's own pixels, with a data trace beneath it.
+   COLOUR and TYPE: same night palette as the Science board — #0b0d0b, ink #e9ebe6, sage #b8c7b0, ember #e07a4f. Instrument Serif + DM Sans.
+   LAYOUT: masthead with board switch, stage + controls, phase trace, the board itself as a masonry grid, how-it-maps notes. */
+:root{color-scheme:dark only;--bg:#0b0d0b;--card:#121412;--ink:#e9ebe6;--soft:#b9bcb3;--muted:#979b91;--rule:#2a2e29;--glow:#b8c7b0;--ember:#e07a4f;
+ --c0:#3987e5;--c1:#d95926;--c2:#199e70;--c3:#c98500;--serif:'Instrument Serif',Georgia,serif}
+:root,:root[data-theme]{color-scheme:dark only}
+html{background:var(--bg)}*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'DM Sans',system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,p{margin:0}a{color:inherit}button{font:inherit}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.shell{max-width:1240px;margin:auto;padding:0 max(4vw,16px)}
+.masthead{display:flex;flex-wrap:wrap;gap:12px 40px;align-items:center;padding:26px 0 18px}
+.name{font:40px/1 var(--serif);letter-spacing:-1px;text-decoration:none}.name span{color:var(--glow)}
+.descriptor{font-size:13px;color:var(--muted);max-width:36ch}
+.boards{margin-left:auto;display:flex;gap:6px;font-size:14px}.boards a{text-decoration:none;padding:10px 16px;border:1px solid var(--rule);border-radius:999px;color:var(--soft);min-height:44px;display:inline-flex;align-items:center}.boards a[aria-current]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.intro{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:5vw;align-items:end;padding:18px 0 26px}
+.eyebrow{font-size:13px;color:var(--glow)}
+h1{font:clamp(44px,6vw,84px)/.98 var(--serif);letter-spacing:-.03em;margin-top:12px;text-wrap:balance}h1 em,h2 em{color:var(--glow)}
+.dek{font-size:17px;font-weight:300;color:var(--soft);max-width:52ch}
+.studio{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0;border:1px solid var(--rule)}
+.stage{position:relative;background:#050605;min-height:640px;overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.camui{flex:0 0 auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums;text-shadow:0 1px 6px #000}
+.camui span{padding:6px 10px;border-radius:999px;background:rgba(11,13,11,.7)}.camui.moved span{color:var(--ink);box-shadow:inset 0 0 0 1px var(--glow)}
+.cammode{display:flex;border:1px solid var(--glow);border-radius:999px;overflow:hidden;background:rgba(11,13,11,.82)}.cammode button{min-height:40px;padding:0 14px;border:0;background:none;color:var(--soft);cursor:pointer;font-size:14px}.cammode button[aria-pressed=true]{background:var(--glow);color:var(--bg)}
+.camreset{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--glow);background:rgba(11,13,11,.82);color:var(--ink);cursor:pointer;font-size:14px}.camreset:hover{background:var(--glow);color:var(--bg)}
+.scenepick{position:absolute;right:14px;top:12px;z-index:3;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft)}.scenepick select{width:auto;max-width:min(320px,52vw);background:rgba(11,13,11,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.hud{position:absolute;left:16px;right:min(360px,48%);top:14px;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--soft);pointer-events:none;text-shadow:0 1px 6px #000}
+.hud b{display:block;font:24px/1.1 var(--serif);font-weight:400;color:var(--ink)}
+.stagefoot{position:absolute;left:16px;right:14px;bottom:14px;z-index:3;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;pointer-events:none}.stagefoot .camui{pointer-events:auto}
+.phase{margin:0;flex:1 1 auto;min-width:0;max-width:34ch;overflow-wrap:anywhere;font:clamp(22px,2.6vw,34px)/1 var(--serif);pointer-events:none;text-shadow:0 2px 12px #000}
+.phase small{display:block;font:13px 'DM Sans';color:var(--muted);margin-top:6px}
+.side{padding:20px;display:flex;flex-direction:column;gap:18px;border-left:1px solid var(--rule);background:var(--card)}
+.side h3{font:22px/1.1 var(--serif);font-weight:400}
+.lbl{font-size:13px;color:var(--muted);margin-bottom:8px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--soft);cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select{width:100%;font-size:16px;background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:6px;min-height:44px;padding:0 10px}
+input[type=range]{width:100%;accent-color:var(--glow);height:28px}
+.row{display:flex;gap:8px;align-items:center}
+.btn{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--glow);background:none;color:var(--ink);cursor:pointer;font-size:15px}
+.btn.solid{background:var(--glow);color:var(--bg)}
+.toggle{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--soft);min-height:40px;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--glow)}
+.note{font-size:13px;color:var(--muted);line-height:1.5}
+.view{border-top:1px solid var(--rule);padding-top:16px}.vrow{display:grid;grid-template-columns:1.4em minmax(0,1fr);align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+#cv{touch-action:none;cursor:grab}#cv:active{cursor:grabbing}.stage:focus-visible{outline:2px solid var(--glow);outline-offset:-2px}
+.snd{border-top:1px solid var(--rule);padding-top:16px}.sndout{display:grid;grid-template-columns:auto auto;gap:3px 12px;font-size:13px;margin:12px 0 6px;color:var(--muted)}.sndout dd{margin:0;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.trace{position:relative;height:150px;border:1px solid var(--rule);border-top:0;background:var(--bg)}
+.trace svg{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.banner{border:1px solid var(--ember);padding:12px 16px;font-size:14px;line-height:1.55;margin-top:18px;max-width:86ch}.banner b{color:var(--ember);font-weight:500}
+.board{margin-top:56px}
+.board header{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+h2{font:clamp(34px,4vw,52px)/1.05 var(--serif);letter-spacing:-.02em;text-wrap:balance}
+.board header p{font-size:14px;color:var(--muted);max-width:56ch}
+.masonry{columns:4 220px;column-gap:14px}
+.pin{display:block;width:100%;margin:0 0 14px;padding:0;border:1px solid var(--rule);background:#000;cursor:pointer;break-inside:avoid;position:relative;text-align:left;color:var(--ink)}
+.pin img{display:block;width:100%;height:auto;transition:opacity .3s}
+.pin span{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.pin span em{font-style:normal;color:var(--muted);font-size:13px}
+.pin[aria-pressed=true]{border-color:var(--glow);outline:2px solid var(--glow);outline-offset:2px}
+.pin:hover img{opacity:.85}
+.maps{margin-top:56px;border-top:1px solid var(--ink)}
+.maps ol{list-style:none;margin:0;padding:0}
+.maps li{display:grid;grid-template-columns:minmax(0,13em) minmax(0,1fr) minmax(0,1fr) auto;gap:20px;padding:16px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.maps strong{font:22px/1.2 var(--serif);font-weight:400}.maps span{color:var(--soft);font-size:15px}
+.ev{font-size:13px;white-space:nowrap}.ev.d{color:var(--glow)}.ev.l{color:#d8b36a}.ev.c{color:var(--muted)}
+/* personas */
+.personas{margin-top:56px}
+.personas>header{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.personas>header p{font-size:14px;color:var(--muted);max-width:60ch}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--rule);margin:18px 0 8px}
+.how div{background:var(--bg);padding:18px 20px}.how b{font:20px/1.2 var(--serif);font-weight:400;display:block;margin-bottom:6px}.how p{font-size:14px;color:var(--soft);line-height:1.55}
+.persona{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);gap:32px;padding:32px 0;border-top:1px solid var(--rule)}
+.persona:first-of-type{border-top:1px solid var(--ink)}
+.persona h3{font:clamp(34px,3.6vw,46px)/1 var(--serif);font-weight:400}
+.persona .line{font-size:16px;color:var(--soft);margin-top:8px;font-weight:300}
+.trio{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}
+.trio span{font-size:13px;border:1px solid var(--rule);border-radius:999px;padding:6px 12px;color:var(--soft)}.trio span b{font-weight:500;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:6px 0 16px}
+.stats div{font-size:12px;color:var(--muted)}.stats strong{display:block;font:26px/1.1 var(--serif);font-weight:400;color:var(--ink)}
+.persona blockquote{margin:0 0 10px;font:19px/1.3 var(--serif);color:var(--ink);padding-left:14px;border-left:1px solid var(--rule)}
+.persona h4{font-size:13px;font-weight:400;color:var(--glow);margin:0 0 8px}
+.persona ul{margin:0 0 18px;padding-left:18px;color:var(--soft);font-size:15px;line-height:1.6}.persona li+li{margin-top:6px}
+.persona .tag{font-size:12px;margin-left:6px}
+.ages{display:grid;gap:6px;margin-bottom:18px}
+.age{display:grid;grid-template-columns:4.2em minmax(0,1fr) 5.4em;gap:10px;align-items:center;font-size:13px;color:var(--soft)}
+.age .tr{height:10px;background:#1a1d19;border-radius:0 4px 4px 0;position:relative}.age .fl{position:absolute;inset:0 auto 0 0;border-radius:0 4px 4px 0;background:var(--ember)}
+.age .fl.thin{background:repeating-linear-gradient(45deg,#e07a4f 0 3px,transparent 3px 6px)}
+.age b{font-weight:400;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.age i{font-style:normal;color:var(--muted)}
+.mods{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+@media(max-width:900px){.persona{grid-template-columns:minmax(0,1fr);gap:18px}.how{grid-template-columns:minmax(0,1fr)}}
+footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between}
+@media(max-width:900px){.studio{grid-template-columns:minmax(0,1fr)}.stage{min-height:0;aspect-ratio:16/10}.side{border-left:0;border-top:1px solid var(--rule)}.intro{grid-template-columns:minmax(0,1fr)}.maps li{grid-template-columns:minmax(0,1fr);gap:4px}}
+@media(max-width:600px){.stagefoot{left:12px;right:10px;bottom:10px;flex-direction:column-reverse;align-items:stretch;gap:10px}.camui{flex-wrap:wrap;justify-content:flex-end;gap:6px}.camui span{font-size:12px}.scenepick{left:12px;right:12px}.scenepick span{display:none}.scenepick select{max-width:none;width:100%}.hud{top:66px;right:16px}.boards{margin-left:0}.stage{aspect-ratio:4/5}.hud b{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <a class="name" href="index.html">Painwaves<span>.</span></a>
+    <p class="descriptor">Translating pain and relief into sound, from measured data. Producer's R&amp;D desk.</p>
+    <nav class="boards" aria-label="Boards"><a href="index.html">Science board</a><a href="creative.html" aria-current="page">Creative board</a></nav>
+  </header>
+  <section class="intro">
+    <div><p class="eyebrow">Creative board · particle studies</p><h1>Choose a scene. <em>Watch it hurt, then heal.</em></h1></div>
+    <p class="dek">Eight scenes, each a different way of drawing our data: rings, streams, a neural network, terrain, bands, a funnel. They are built from 678 people placed by their pain profile, 19 measured Cz waveforms, 29,249 ratings, and a clinical relief curve carrying it all back to the alpha-wave silence. Pick one from the menu on the stage. Everything runs on this device, in the browser.</p>
+  </section>
+
+  <section class="studio" aria-label="Particle studio">
+    <div class="stage" id="stage" tabindex="0" aria-label="Particle stage: drag to turn or move, scroll to fly in, W A S D Q E and arrow keys to move, M switches drag mode">
+      <canvas id="cv" aria-label="Particle animation of the selected image"></canvas>
+      <div class="hud" id="hud"></div>
+      <label class="scenepick"><span>Scene</span><select id="scene" aria-label="Scene"></select></label>
+      <div class="stagefoot"><p class="phase" id="phase"></p><div class="camui"><div class="cammode" role="group" aria-label="Drag mode"><button id="modeTurn" aria-pressed="true">Turn</button><button id="modeMove" aria-pressed="false">Move</button></div><span id="camRead">Turn 0° · Tilt 0°</span><button class="camreset" id="camReset" aria-label="Reset view">Reset view</button></div></div>
+      
+    </div>
+    <aside class="side">
+      <div><h3 id="selName">Membrane</h3><p class="note" id="selMode"></p></div>
+      <div><span class="lbl">Pain profile (from 678 people)</span><div class="chips" id="profChips"></div></div>
+      <div><span class="lbl">Sound persona (from 600 people)</span><div class="chips" id="perChips"></div></div>
+      <div><span class="lbl">Age group</span><div class="chips" id="ageChips"></div><p class="mods" id="modsOut"></p></div>
+      <div><label class="lbl" for="drug">Relief curve</label><select id="drug"></select></div>
+      <div><label class="lbl" for="density">Particles <span id="densOut"></span></label><input type="range" id="density" min="2000" max="24000" step="1000" value="6000"></div>
+      <div class="snd"><span class="lbl">Sound · one noise voice per person</span><div class="row"><button class="btn solid" id="sndBtn" aria-pressed="false">Sound on</button></div>
+        <label class="lbl" for="vol" style="margin-top:10px">Volume</label><input type="range" id="vol" min="0" max="1" step="0.01" value="0.5">
+        <label class="lbl" for="voices">Voices <span id="voicesOut">256</span></label><input type="range" id="voices" min="64" max="678" step="2" value="256">
+        <dl class="sndout" id="sndOut"></dl><p class="note" id="sndMsg">Starts quiet. Voices above about 400 may stutter on slower devices.</p></div>
+      <div class="view"><span class="lbl">View · move through the particles</span>
+        <label class="vrow">X <input type="range" id="vx" min="-4" max="4" step="0.01" value="0"></label>
+        <label class="vrow">Y <input type="range" id="vy" min="-4" max="4" step="0.01" value="0"></label>
+        <label class="vrow">Z <input type="range" id="vz" min="-1" max="1.6" step="0.005" value="0"></label>
+        <div class="row"><button class="btn" id="vreset">Reset view</button></div>
+        <p class="note">Drag the stage to turn, scroll or pinch to fly in, shift-drag to slide. Particles swell as you approach and pass by you as you fly through. Drag up or down to tilt all the way over the top or underneath. Switch the viewer to Move (or press M) and dragging slides the camera on X and Y instead; shift-drag or right-drag always does the opposite of the current mode. Keys: W/S forward and back, A/D or ← → left and right, Q/E, R/F or ↑ ↓ up and down.</p></div>
+      <label class="toggle"><input type="checkbox" id="wear"> Play to the end of the trial</label>
+      <div class="row"><button class="btn solid" id="playBtn">Pause</button><button class="btn" id="restart">Restart</button><button class="btn" id="shuffle">Reshuffle</button></div>
+      <p class="note">Tip: click the trace below to jump to any moment.</p>
+    </aside>
+  </section>
+  <div class="trace" id="trace" aria-label="Pain rating over the piece, with the current position"></div>
+  <p class="banner" style="border-color:var(--glow)"><b style="color:var(--glow)">Relief comes from two clinical trials.</b> Curves are fitted to the posted results of a dental-surgery trial (single dose; combination, naproxen, acetaminophen, placebo) and a bunion-surgery trial (every 12 hours for 48 hours). Pick an arm under Relief curve; placebo shows how little relief happens without a drug. Details on the Science board.</p>
+
+  <section class="personas" id="personas">
+    <header><h2>Five sound <em>personas</em></h2><p>Built from the 600 answers to “how would you describe your pain if it was a noise you can't escape?”. Choose one to play it on the stage, at any age.</p></header>
+    <div class="how">
+      <div><b>1 · Code every answer</b><p>Each answer is tagged for time pattern (constant, pulsing, waves, sudden), timbre (impact, buzz, ringing, drone…), pitch, loudness and body cues, using transparent keyword rules.</p></div>
+      <div><b>2 · Pair time with timbre</b><p>A persona is a pairing that recurs: the answers where a time pattern and a timbre turn up together most often, plus the body cue that comes with them. Rules are applied in order; each answer joins one persona at most.</p></div>
+      <div><b>3 · Add age as a modifier</b><p>The persona sets the core sound. Age adjusts it using shifts measured across all 600 people (pitch, buzz, constancy, pulse), because single persona-by-age groups are too small to stand alone.</p></div>
+    </div>
+    <div id="perList"></div>
+    <p class="note" id="perFoot" style="margin-top:14px"></p>
+  </section>
+
+
+  <section class="maps">
+    <ol id="maps"></ol>
+  </section>
+</div>
+<footer class="shell"><span>Painwaves · Creative board · Daniel Roversi</span></footer>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const MODE_TXT={orbit:'Orbit: particles circle the centre; pain speeds and frays the rings.',rise:'Rise: particles lift like a fountain; pain drives them higher and faster.',flow:'Flow: particles stream sideways; pain turns the stream into rapids.',terrain:'Terrain: the image heaves like a surface; pain raises the swell.',burst:'Burst: particles fire outward along their branches with each pulse.',swirl:'Swirl: a vortex that tightens with pain and opens with relief.'};
+const NAMES=['Fading','Quiet','Sustained','Crescendo'],COL=['#3987e5','#d95926','#199e70','#c98500'];
+const cv=$('#cv'),ctx=cv.getContext('2d',{alpha:false}),stage=$('#stage');
+let per='pounder',ageB='35–49',strikes=[],nextStrike=0,EL=null,VHI=null,VPOOL=null,prevR=0,prevDr=0,WEV=[],wDir=1,lastWave=-9,OPX=null,OPY=null,MVX=null,MVD=null,MVN=null,MVB=null,modT=0,D=null,sel=0,prof=2,drug='dental.combo',wear=false,HZ=12,playing=true,N=6000,W=0,H=0,img=null,buf=null,u32=null;
+// ---------- data model ----------
+const PRE={a:{tmax:.75,hl:2.5,emax:.85,hill:2,lag:.35},b:{tmax:2,hl:9,emax:.7,hill:1.5,lag:.6}};
+let relief=[];
+const model=p=>{const ke=Math.LN2/p.hl;let lo=ke*1.0001,hi=60;for(let i=0;i<80;i++){const ka=(lo+hi)/2,t=Math.log(ka/ke)/(ka-ke);t>p.tmax?lo=ka:hi=ka}const ka=(lo+hi)/2;
+  const Cf=t=>Math.exp(-ke*t)-Math.exp(-ka*t);let cmax=0;for(let t=0;t<=12;t+=.01)cmax=Math.max(cmax,Cf(t));
+  const ke0=Math.LN2/p.lag,out=[];let ce=0;for(let t=0;t<=12.0001;t+=.05){for(let k=0;k<50;k++){const tt=t-.05+k*.001;if(tt>=0)ce+=ke0*(Cf(tt)/cmax-ce)*.001}out.push(p.emax*Math.pow(ce,p.hill)/(Math.pow(.5,p.hill)+Math.pow(ce,p.hill)))}return out};
+// timeline (seconds): silence 0-5, onset 5-7, untreated pain 7-20, relief 20-(20+R), resolve to silence
+const T_SIL=5,T_ON=2,T_PAIN=13,T_REL=34,T_END=6;
+let nadirH=12,TOTAL=60;
+const timeline=()=>{const [tk,ak]=drug.split('.'),tr=D.trials[tk];relief=tr.arms[ak].pid.map(p=>p/D.trials.baseline_assumed);HZ=tr.T;let mi=0;relief.forEach((v,i)=>{if(v>relief[mi])mi=i});nadirH=wear?HZ:Math.max(1,mi*.05);TOTAL=T_SIL+T_ON+T_PAIN+T_REL+T_END};
+const P=()=>D.prof[prof];
+const painLevel=()=>Math.min(10,P().level+1.5); // profile's typical level, lifted toward the rated-7+ range
+const untreated=f=>{const d=P().dec,x=f*(d.length-1),i=Math.min(d.length-2,Math.floor(x)),fr=x-i;return Math.max(0,Math.min(10,painLevel()+(d[i]*(1-fr)+d[i+1]*fr)*1.6))};
+const state=t=>{ // returns {r,alpha,phase,label,hours}
+  if(t<T_SIL)return{r:0,phase:0,label:'Silence',sub:'Alpha baseline, eyes closed',h:null};
+  t-=T_SIL; const r0=untreated(0);
+  if(t<T_ON){const k=t/T_ON;return{r:r0*k*k*(3-2*k),phase:1,label:'Pain begins',sub:NAMES[prof]+' profile',h:null}}
+  t-=T_ON; if(t<T_PAIN){return{r:untreated(t/T_PAIN),phase:1,label:'Pain',sub:NAMES[prof]+' profile, untreated session shape',h:null}}
+  t-=T_PAIN; const rd=untreated(1);
+  if(t<T_REL){const h=t/T_REL*nadirH,x=Math.min(relief.length-1.001,h/.05),i=Math.floor(x),f=x-i,rv=relief[i]*(1-f)+relief[i+1]*f;return{r:rd*(1-rv),phase:2,label:'Relief',sub:'Hour '+h.toFixed(1)+' after the dose',h}}
+  t-=T_REL; const i=Math.min(relief.length-1,Math.round(nadirH/.05)),rl=rd*(1-relief[i]);
+  if(wear)return{r:rl,phase:3,label:`After ${HZ} h`,sub:'Where the trial curve ends',h:HZ};
+  const k=Math.min(1,t/(T_END*.7));return{r:rl*(1-k*k*(3-2*k)),phase:3,label:'Silence',sub:'Resolves at peak relief (design choice)',h:null}};
+// ERP wave at rating r (normalised to rating-10 N2-P2)
+let ERPN=null,ET=null;
+const erpAt=(r,ms)=>{if(r<=0)return 0;const R=D.erp.rating,j=Math.max(0,Math.min(ET.length-1,Math.round((ms-ET[0])/4)));const lo=Math.max(1,Math.floor(r)),hi=Math.min(10,lo+1),f=Math.min(1,r-lo);
+  const a=R[lo-1].wave[j],b=R[hi-1].wave[j];let v=(r<1?a*r:a*(1-f)+b*f);return v/ERPN};
+// ---------- data-built scenes ----------
+let camCV=null,VIEW={yaw:0,pitch:0,tx:0,ty:0,tz:0},ZO=NaN,DZ=null,NET=null,seedN=1,X=0,Y=0,BR=0,MX=0,nP=0,PX,PY,LEV,NOI,DRF,LAG,CL,PW,RW=[],PWR=[],RANK,ORDX,TREE=null,G=null,GC=null,GW=90,GH=60;
+let A0,A1,A2,A3,PI,KD,C1,C2,PH;
+const rngF=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const hexRGB=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const lerp3=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];
+const PCOL=COL.map(hexRGB).map(c=>lerp3(c,[255,255,255],.25));
+const prep=()=>{const P=D.pts;nP=P.length;PX=new Float32Array(nP);PY=new Float32Array(nP);LEV=new Float32Array(nP);NOI=new Float32Array(nP);DRF=new Float32Array(nP);LAG=new Float32Array(nP);CL=new Int8Array(nP);
+  let mx=0,my=0;P.forEach(p=>{mx=Math.max(mx,Math.abs(p[0]));my=Math.max(my,Math.abs(p[1]))});
+  P.forEach((p,i)=>{PX[i]=p[0]/mx;PY[i]=p[1]/my;CL[i]=p[2];LEV[i]=p[5];NOI[i]=p[6];DRF[i]=p[7];LAG[i]=p[8]});
+  const nz=w=>Float32Array.from(w,v=>v/ERPN);RW=D.erp.rating.map(r=>nz(r.wave));PWR=D.erp.power.map(r=>nz(r.wave));
+  PW=new Float32Array(nP*300);for(let p=0;p<nP;p++){const l=Math.max(1,Math.min(10,LEV[p])),lo=Math.floor(l)-1,hi=Math.min(9,lo+1),f=l-1-lo;for(let j=0;j<300;j++)PW[p*300+j]=RW[lo][j]*(1-f)+RW[hi][j]*f}
+  RANK=new Int16Array(nP);[...Array(nP).keys()].sort((a,b)=>LEV[a]-LEV[b]).forEach((p,k)=>RANK[p]=k);
+  ORDX=new Int16Array(nP);[...Array(nP).keys()].sort((a,b)=>PX[a]-PX[b]).forEach((p,k)=>ORDX[p]=k);
+  // density of people over the profile map, overall and per profile
+  G=new Float32Array(GW*GH);GC=[0,1,2,3].map(()=>new Float32Array(GW*GH));
+  for(let p=0;p<nP;p++){const gx=(PX[p]*.5+.5)*(GW-1),gy=(PY[p]*.5+.5)*(GH-1);for(let y=Math.max(0,gy-8|0);y<Math.min(GH,gy+9);y++)for(let x=Math.max(0,gx-8|0);x<Math.min(GW,gx+9);x++){const k=Math.exp(-((x-gx)**2+(y-gy)**2)/18);G[y*GW+x]+=k;GC[CL[p]][y*GW+x]+=k}}
+  const gm=Math.max(...G);for(let i=0;i<G.length;i++){G[i]/=gm;for(let c=0;c<4;c++)GC[c][i]/=gm}
+  // one 3D network: each person is a neuron at (profile-map x, profile-map y, pain level), wired to its nearest neighbours
+  NET={x:new Float32Array(nP),y:new Float32Array(nP),z:new Float32Array(nP),a:[],b:[],rate:[],seed:[]};
+  for(let p=0;p<nP;p++){NET.x[p]=PX[p]*1.9;NET.y[p]=PY[p]*1.6;NET.z[p]=(LEV[p]/10-.5)*3.2+((p*7919)%97/97-.5)*.35}
+  {const seen=new Set();for(let p=0;p<nP;p++){const d=[];for(let q=0;q<nP;q++)if(q!==p)d.push([(NET.x[p]-NET.x[q])**2+(NET.y[p]-NET.y[q])**2+(NET.z[p]-NET.z[q])**2,q]);d.sort((u,v)=>u[0]-v[0]);
+    for(let k=0;k<3;k++){const q=d[k][1],key=p<q?p+'_'+q:q+'_'+p;if(seen.has(key))continue;seen.add(key);NET.a.push(p);NET.b.push(q);NET.rate.push(.25+.5*((p*31+q*17)%101)/101);NET.seed.push(((p*131+q*71)%997)/997)}}}
+  // a growth tree per profile: each person joins the nearest person already placed, starting from the profile centre
+  TREE={par:new Int16Array(nP).fill(-1),dep:new Uint8Array(nP),root:[]};
+  for(let c=0;c<4;c++){const m=[];for(let p=0;p<nP;p++)if(CL[p]==c)m.push(p);const cx=m.reduce((a,p)=>a+PX[p],0)/m.length,cy=m.reduce((a,p)=>a+PY[p],0)/m.length;TREE.root[c]=[cx,cy];
+    m.sort((a,b)=>Math.hypot(PX[a]-cx,PY[a]-cy)-Math.hypot(PX[b]-cx,PY[b]-cy));const placed=[];
+    m.forEach(p=>{let best=-1,bd=Math.hypot(PX[p]-cx,PY[p]-cy)*1.15;for(const q of placed){const d=Math.hypot(PX[p]-PX[q],PY[p]-PY[q]);if(d<bd){bd=d;best=q}}TREE.par[p]=best;TREE.dep[p]=best<0?1:TREE.dep[best]+1;placed.push(p)})}};
+const ncam=E=>{const a=E.t*(.03+.06*E.pn)+E.rot,pt=.18*Math.sin(a*.8);return{ca:Math.cos(a),sa:Math.sin(a),cx:Math.sin(a*.7)*.35,cy:Math.sin(a*.5)*.25,cz:Math.cos(a*.6)*.35,cp:Math.cos(pt),sp:Math.sin(pt),F:Math.min(W,H)*.75}};
+const nproj=(c,x,y,z)=>{const dx=x-c.cx,dy=y-c.cy,dz=z-c.cz,xr=dx*c.ca-dz*c.sa,zr=dx*c.sa+dz*c.ca,yr=dy*c.cp-zr*c.sp,zz=dy*c.sp+zr*c.cp+1.15;return[W/2+xr/zz*c.F,H/2-yr/zz*c.F,zz]};
+const nfire=(e,E)=>{const a=NET.a[e],b=NET.b[e],lv=(LEV[a]+LEV[b])/20,vol=Math.min(1,(NOI[a]-.6)/1.4),rate=NET.rate[e]*(.3+1.6*E.pn)*(.6+lv+.5*vol),c=E.t*rate+NET.seed[e],cyc=Math.floor(c);
+  return{sp:c-cyc,on:E.pn>.03&&((cyc*2654435761+e*40503)>>>0)%100<100*Math.min(.95,.15+.9*E.pn*lv)}};
+const wv=(w,u)=>w[Math.max(0,Math.min(299,u*299|0))];
+const rwAt=(rf,u)=>{if(rf<=0)return 0;const l=Math.max(1,Math.min(10,rf)),lo=Math.floor(l)-1,hi=Math.min(9,lo+1),f=l-1-lo,j=Math.max(0,Math.min(299,u*299|0));return(RW[lo][j]*(1-f)+RW[hi][j]*f)*(rf<1?rf:1)};
+const reliefPain=h=>{const x=Math.max(0,Math.min(relief.length-1.001,h/.05)),i=Math.floor(x),f=x-i;return untreated(1)*(1-(relief[i]*(1-f)+relief[i+1]*f))};
+const SCN=[
+ {name:'Membrane',view:{tz:-.09},el:i=>KD[i]==0?A0[i]:-2,eld:(i,E)=>Math.max(0,Math.min(9,Math.round(Math.min(10,LEV[PI[i]]*E.sc))-1)),tag:'10 Cz rings · 678 people',txt:'Ten concentric rings are the measured Cz responses for pain ratings 1 to 10, each waveform wrapped around its ring and travelling. The 678 people orbit on the ring of their own pain level, jittering by their volatility. Rings above the current pain stay dim.',
+  c:[[42,111,219],[41,179,166],[232,210,90]],
+  init(r){for(let i=0;i<N;i++){if(r()<.62){KD[i]=0;const k=Math.min(9,Math.floor(Math.sqrt(r())*10));A0[i]=k;A1[i]=r()*6.2832;const c=k<5?lerp3(this.c[0],this.c[1],k/4):lerp3(this.c[1],this.c[2],(k-5)/4);C1.set(c,i*3)}else{KD[i]=1;const p=i%nP;PI[i]=p;A1[i]=Math.atan2(PY[p],PX[p])+(r()-.5)*.4;A2[i]=r();C1.set(PCOL[CL[p]],i*3)}C2.set([255,236,200],i*3)}},
+  pos(i,E){const cx=W/2,cy=H/2,S=Math.min(W,H);if(KD[i]==0){const k=A0[i],th=A1[i],R=S*(.15+.032*k),u=(th/6.2832+E.t*(.02+.1*E.pn)*(k+1)/10)%1,w=wv(RW[k],u),act=k+1<=E.r+.5?1:.22;const dr=w*S*.03*(.15+E.pn)*act;X=cx+Math.cos(th)*(R+dr);Y=cy+Math.sin(th)*(R+dr);BR=(.25+.75*act)*(.5+Math.abs(w)*.8);MX=Math.min(1,Math.abs(w)*act*E.pn)}
+   else{const p=PI[i],lp=Math.min(10,LEV[p]*E.sc),R=S*(.15+.032*Math.max(0,lp-1)),th=A1[i]+E.t*.04*(1+DRF[p]*.3),j=Math.sin(E.t*(1+NOI[p])*2+A2[i]*20)*NOI[p]*S*.008*E.pn;X=cx+Math.cos(th)*(R+j);Y=cy+Math.sin(th)*(R+j);BR=E.hl(p)*1.3;MX=0}}},
+ {name:'Aurora',view:{yaw:0,pitch:0,tx:.02,ty:.04,tz:-.39},el:i=>KD[i]?0:-1,tag:'678 streams · rising with pain',txt:'The disc is the profile map flattened: every person sits where their rating pattern places them. Each sends up a stream whose height is their own pain level scaled by the moment, swaying with their volatility. When pain hits, the disc\'s ring breaks apart: its particles lift off and float upward, more and higher as pain rises. In silence the streams sink back and the ring reforms as a glowing disc.',
+  init(r){for(let i=0;i<N;i++){const p=i%nP;PI[i]=p;KD[i]=r()<.14?1:0;A0[i]=r();A1[i]=r();A2[i]=r()*6.28;C1.set([205,190,255],i*3);C2.set(lerp3([70,225,175],PCOL[CL[p]],.35),i*3)}},
+  pos(i,E){const S=Math.min(W,H),p=PI[i],bx=W/2+PX[p]*S*.46,by=H*.8+PY[p]*S*.075;if(KD[i]){const a=A2[i],lift=Math.max(0,Math.min(1,E.pn*1.5-A0[i]*.9)),fl=(A1[i]+E.t*(.04+.12*E.pn))%1,h=lift*(.15+.85*fl)*H*.62;X=W/2+Math.cos(a)*S*.48*(1-.25*lift*fl)+Math.sin(E.t*.8+a*5)*S*.02*lift;Y=H*.8+Math.sin(a)*S*.085-h;BR=.5*(1-.65*lift*fl)+.15*lift;MX=lift*.6;return}
+   const lp=Math.min(10,LEV[p]*E.sc),u=(A0[i]+E.t*(.04+.3*E.pn)*(.6+A1[i]))%1,h=lp/10*H*.66;X=bx+Math.sin(u*7+E.t+p)*S*.012*NOI[p]*(1+E.pn*2);Y=by-u*h;BR=Math.pow(1-u,.7)*E.hl(p)*(.35+.9*lp/10)+.08;MX=u}},
+ {name:'Neurons',view:{yaw:-107*Math.PI/180,pitch:6*Math.PI/180,tx:-.13,ty:.08,tz:.63},el:i=>-1,tag:'Inside one network of 678 neurons',txt:'You are inside one neural network: each of the 678 people is a neuron, placed by where their rating pattern sits on the profile map and by how much pain they report (depth), and wired to their three nearest neighbours. As pain rises, synaptic fires spark along the connections and light the neurons they reach: more often and brighter for higher pain and for people with higher and more volatile ratings. In silence the network rests in a slow glow.',
+  init(r){const nE=NET.a.length;for(let i=0;i<N;i++){if(r()<.55){KD[i]=1;const p=Math.floor(r()*nP);PI[i]=p;const rr=.035*Math.cbrt(r()),th=r()*6.283,ph=Math.acos(2*r()-1);A1[i]=rr*Math.sin(ph)*Math.cos(th);A2[i]=rr*Math.sin(ph)*Math.sin(th);A3[i]=rr*Math.cos(ph);C1.set(PCOL[CL[p]],i*3)}else{KD[i]=0;const e=Math.floor(r()*nE);A0[i]=e;A1[i]=r();PI[i]=NET.a[e];C1.set([150,165,195],i*3)}C2.set([255,236,210],i*3)}},
+  overlay(g,E){const c=ncam(E),nE=NET.a.length,P=new Float32Array(nP*3);const CV=camCV,S2=Math.min(W,H);for(let p=0;p<nP;p++){const q=nproj(c,NET.x[p],NET.y[p],NET.z[p]);if(q[2]<.08){P[p*3+2]=0;continue}const px=q[0]-W/2,py=q[1]-H/2,zq=(q[2]-1.15)*S2*.45,x1=px*CV.cy+zq*CV.sy,z1=-px*CV.sy+zq*CV.cy,y1=py*CV.cp-z1*CV.sp,z2=py*CV.sp+z1*CV.cp-VIEW.tz*CV.D,d=CV.D+z2;if(d<CV.D*.02){P[p*3+2]=0;continue}const f=CV.D/d;P[p*3]=W/2+(x1-VIEW.tx*S2)*f;P[p*3+1]=H/2+(y1-VIEW.ty*S2)*f;P[p*3+2]=q[2]/Math.max(.2,f)}
+    g.lineWidth=Math.max(1,Math.min(W,H)/900);g.strokeStyle='rgba(150,170,205,0.11)';g.beginPath();
+    for(let e=0;e<nE;e++){const a=NET.a[e],b=NET.b[e];if(P[a*3+2]<.08||P[b*3+2]<.08)continue;g.moveTo(P[a*3],P[a*3+1]);g.lineTo(P[b*3],P[b*3+1])}g.stroke();
+    g.lineCap='round';for(let e=0;e<nE;e++){const f=nfire(e,E);if(!f.on)continue;const a=NET.a[e],b=NET.b[e];if(P[a*3+2]<.08||P[b*3+2]<.08)continue;
+      const s0=Math.max(0,f.sp-.18),x0=P[a*3]+(P[b*3]-P[a*3])*s0,y0=P[a*3+1]+(P[b*3+1]-P[a*3+1])*s0,x1=P[a*3]+(P[b*3]-P[a*3])*f.sp,y1=P[a*3+1]+(P[b*3+1]-P[a*3+1])*f.sp,zz=P[a*3+2],al=Math.min(.9,(.35+.6*E.pn)*Math.exp(-zz*.35));
+      const lw=Math.min(2.6,Math.max(1,Math.min(W,H)/700/zz)),gr=g.createLinearGradient(x0,y0,x1,y1);gr.addColorStop(0,'rgba(255,190,150,0)');gr.addColorStop(1,`rgba(255,236,214,${al.toFixed(2)})`);g.strokeStyle=gr;g.lineWidth=lw;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y1);g.stroke();g.fillStyle=`rgba(255,244,230,${Math.min(1,al*1.1).toFixed(2)})`;g.beginPath();g.arc(x1,y1,lw*1.1,0,6.283);g.fill()}g.lineCap='butt'},
+  pos(i,E){let x3,y3,z3,glow=0;const c=ncam(E);
+    if(KD[i]){const p=PI[i];x3=NET.x[p]+A1[i];y3=NET.y[p]+A2[i];z3=NET.z[p]+A3[i];const lv=LEV[p]/10,ph=(E.t*(.3+1.4*E.pn)*(.5+lv)+p*.618)%1;glow=E.pn>.03?Math.exp(-ph*9)*E.pn*(.6+lv):0}
+    else{const e=A0[i],a=NET.a[e],b=NET.b[e],u=A1[i];x3=NET.x[a]+(NET.x[b]-NET.x[a])*u;y3=NET.y[a]+(NET.y[b]-NET.y[a])*u;z3=NET.z[a]+(NET.z[b]-NET.z[a])*u;const f=nfire(e,E);if(f.on){const d=u-f.sp;glow=Math.exp(-Math.abs(d)*14)*(d<0?1:.35)*(.6+E.pn)}}
+    const q=nproj(c,x3,y3,z3);if(q[2]<.06){X=-9e3;Y=-9e3;BR=0;MX=0;return}ZO=(q[2]-1.15)*Math.min(W,H)*.45;
+    X=q[0];Y=q[1];const fog=Math.exp(-q[2]*.42);BR=(KD[i]?1.1:.3)*fog*(1+Math.min(1.5,.3/q[2]))*(.6+.4*E.al)+glow*2.2*fog;MX=Math.min(1,glow*1.4)}},
+ {name:'Terrain',view:{yaw:-2*Math.PI/180,pitch:25*Math.PI/180,tx:.02,ty:-.08,tz:.14},el:i=>Math.min(9,Math.floor(A1[i]/GH*10)),tag:'Density of 678 people',txt:'The landscape is the density of the 678 people on the profile map: peaks are where many people share a rating pattern. Pain raises the whole terrain and lifts the chosen profile\'s region highest, and the Cz response at the current rating rolls outward from that profile\'s centre.',
+  init(r){const cells=GW*GH;for(let i=0;i<N;i++){const c=Math.floor(r()*cells);A0[i]=c%GW;A1[i]=Math.floor(c/GW);A2[i]=r()-.5;A3[i]=r()-.5;C1.set([40,175,135],i*3);C2.set([238,92,62],i*3)}},
+  pos(i,E){const gx=A0[i],gy=A1[i],c=gy*GW+gx,rc=TREE.root[prof],d=Math.hypot(gx/GW-(rc[0]*.5+.5),gy/GH-(rc[1]*.5+.5)),w=rwAt(E.r,((E.beatOn?E.bp:(E.t*.45)%1)-d*.8+2)%1);
+   let h=G[c]*(.2+E.pn*1.3)+GC[prof][c]*E.pn*.9+w*.18*E.pn*G[c];X=W*.5+((gx+A2[i])/GW-.5)*W*.78+((gy+A3[i])/GH-.5)*W*.1;Y=H*.22+(gy+A3[i])/GH*H*.62-h*H*.3;BR=.12+h*1.25;MX=Math.min(1,h*1.3)}},
+ {name:'Spectrum',view:{yaw:62*Math.PI/180,pitch:0,tx:.09,ty:-.09,tz:-.13},el:i=>A0[i]<10?A0[i]:Math.floor((A0[i]-10)/9*10),tag:'19 Cz waveforms as bands',txt:'Each band is one measured Cz waveform: ten by pain rating, nine by laser energy, read left to right from 300 ms before to 900 ms after the stimulus. Bands thicken where the brain response is strongest. A scan line reads across; only ratings up to the current pain stay lit.',
+  init(r){for(let i=0;i<N;i++){const k=i%19;A0[i]=k;A1[i]=r();A2[i]=r();C1.set([60,190,230],i*3);C2.set([225,232,95],i*3)}},
+  pos(i,E){const k=A0[i],u=A1[i],w=k<10?wv(RW[k],u):wv(PWR[k-10],u),act=k<10?(k+1<=E.r+.5?1:.18):.25+.6*E.pn,rowY=H*.08+(k<10?k:k+1)*H*.84/19,th=Math.min(W,H)*(.003+Math.abs(w)*.028*(.25+E.pn)*act);
+   const ph=E.beatOn?E.bp:(E.t*.3)%1,fl=Math.exp(-Math.abs(u-ph)*28)*E.pn;X=W*.07+u*W*.86;Y=rowY+(A2[i]-.5)*2*th;BR=(.12+Math.abs(w)*.9)*act+fl*1.2;MX=Math.min(1,Math.abs(w)*1.2)}},
+ {name:'Current',view:{yaw:115*Math.PI/180,pitch:6*Math.PI/180,tx:.17,ty:-.02,tz:.28},el:i=>-1,tag:'678 lines through the relief curve',txt:'Read left to right as hours after the dose. All 678 people start at their own pain level, then converge into a band that follows the trial\'s fitted relief curve; the band\'s width is how much pain is left. The bright cut marks where the piece is now.',
+  init(r){for(let i=0;i<N;i++){const p=i%nP;PI[i]=p;A1[i]=r();C1.set([226,228,224],i*3);C2.set(PCOL[CL[p]],i*3)}},
+  pos(i,E){const S=Math.min(W,H),p=PI[i],u=(A1[i]+E.t*(.01+.05*E.pn))%1,h=u*HZ,pc=reliefPain(h),yc=H*.86-pc/10*H*.7,spread=(LEV[p]-5)/4,wdt=S*(.012+.11*pc/10)*(.35+E.pn);
+   const y0=H*.86-LEV[p]/10*H*.7,k=Math.min(1,u/.12),sk=k*k*(3-2*k),yb=yc+spread*wdt;X=W*.06+u*W*.88;Y=y0*(1-sk)+yb*sk;const now=E.h!=null?Math.exp(-Math.abs(h-E.h)*1.5):0;BR=E.hl(p)*(.2+now*1.4)+.05;MX=E.hl(p)>.9?.7:0}},
+ {name:'Vortex',view:{yaw:0,pitch:0,tx:-.01,ty:-.42,tz:.24},el:i=>KD[i]?-1:Math.min(9,Math.floor(A0[i]*10)),tag:'The relief curve as a funnel',txt:'Top to bottom is time after the dose. Each ring\'s width is the pain left at that hour on the trial\'s fitted curve, so the funnel pinches where relief peaks. The rings twist with pain; below the waist, people drift free as relief takes hold.',
+  init(r){for(let i=0;i<N;i++){if(r()<.22){KD[i]=1;PI[i]=i%nP;A1[i]=r();A2[i]=r()*6.28;C1.set([230,232,240],i*3);C2.set(PCOL[CL[i%nP]],i*3)}else{KD[i]=0;A0[i]=r();A1[i]=r()*6.2832;C1.set([222,226,230],i*3);C2.set([170,190,255],i*3)}}},
+  pos(i,E){const S=Math.min(W,H);if(KD[i]){let wi=0,wm=99;for(let h=0;h<=HZ;h+=HZ/40){const v=reliefPain(h);if(v<wm){wm=v;wi=h}}const wy=H*.08+wi/HZ*H*.8,u=(A1[i]+E.t*.04)%1,a=A2[i];X=W/2+Math.cos(a)*u*S*.5*(.3+E.al);Y=wy+Math.sin(a)*u*S*.18+u*u*S*.2;BR=(1-u)*.6*E.hl(PI[i]);MX=.5;return}
+   const v=A0[i],h=v*HZ,pc=reliefPain(h),R=S*(.04+.34*pc/10),th=A1[i]+E.t*(.08+.5*E.pn)+v*4*E.pn;X=W/2+Math.cos(th)*R;Y=H*.08+v*H*.8+Math.sin(th)*R*.22;const now=E.h!=null?Math.exp(-Math.abs(h-E.h)*1.2):0;BR=(.3+.4*(Math.sin(th)+1)/2)+now;MX=Math.min(1,now)}},
+ {name:'Threads',view:{yaw:-28*Math.PI/180,pitch:2*Math.PI/180,tx:0,ty:0,tz:.11},el:i=>KD[i]?0:-1,tag:'Person → rating → profile',txt:'Each thread is a person. It leaves the left axis (people ordered across the profile map), passes through their average pain rating in the middle, and ends at their profile on the right. Particles flow faster with pain; the chosen profile\'s threads run warm.',
+  init(r){for(let i=0;i<N;i++){if(r()<.06){KD[i]=1;A0[i]=Math.floor(r()*3);A1[i]=r();C1.set([200,200,195],i*3)}else{KD[i]=0;const p=i%nP;PI[i]=p;A1[i]=r();A2[i]=r()-.5;C1.set([205,208,202],i*3)}C2.set([240,140,95],i*3)}},
+  pos(i,E){const S=Math.min(W,H);if(KD[i]){const ax=[.1,.5,.9][A0[i]];X=W*ax;Y=H*.08+A1[i]*H*.84;BR=.35;MX=0;return}
+   const p=PI[i],xL=W*.1,yL=H*.08+ORDX[p]/nP*H*.84,rt=Math.max(0,Math.min(10,Math.round(LEV[p]))),xM=W*.5,yM=H*.1+(10-rt)/10*H*.8+A2[i]*H*.03,xR=W*.9,yR=H*.2+CL[p]*H*.2+A2[i]*H*.06;
+   let u=(A1[i]+E.t*(.015+.12*E.pn))%1*2,x0,y0,x1,y1;if(u<1){x0=xL;y0=yL;x1=xM;y1=yM}else{u-=1;x0=xM;y0=yM;x1=xR;y1=yR}
+   const s=u*u*(3-2*u);X=x0+(x1-x0)*u;Y=y0+(y1-y0)*s+Math.sin(u*9+E.t*2+p)*NOI[p]*S*.012*E.pn;BR=E.hl(p)*.7+.1;MX=E.hl(p)>.9?1:0}}
+];
+const build=()=>{if(!D||!W)return;N=+$('#density').value;EL=new Int8Array(N);A0=new Float32Array(N);OPX=new Float32Array(N);OPY=new Float32Array(N);A1=new Float32Array(N);A2=new Float32Array(N);A3=new Float32Array(N);PI=new Int16Array(N);KD=new Int8Array(N);C1=new Float32Array(N*3);C2=new Float32Array(N*3);PH=new Float32Array(N);
+  const r=rngF(seedN*977+sel*31);for(let i=0;i<N;i++){PH[i]=r()*6.2832;PI[i]=i%nP}SCN[sel].init(r);DZ=new Float32Array(N);for(let i=0;i<N;i++){EL[i]=SCN[sel].el(i);DZ[i]=EL[i]>=0?(EL[i]-4.5)/4.5:(LEV[PI[i]]-5)/5}rot0=r()*6.28;$('#densOut').textContent=N.toLocaleString()};
+let rot0=0;
+const resize=()=>{const r=stage.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,1.5);W=Math.max(200,Math.round(r.width*dpr));H=Math.max(160,Math.round(r.height*dpr));cv.width=W;cv.height=H;buf=ctx.createImageData(W,H);u32=new Uint32Array(buf.data.buffer);u32.fill(0xff050605);build()};
+// ---------- render ----------
+let clock=0,last=performance.now(),smooth=0;
+const frame=now=>{const dt=Math.min(.05,(now-last)/1000);last=now;if(playing)clock+=dt;if(clock>TOTAL)clock=0;
+  if(!A0){requestAnimationFrame(frame);return}
+  const st=state(clock),r=st.r,amp=D.fit.slope*r+D.fit.icpt,ampN=r>0?amp/(D.fit.slope*10+D.fit.icpt):0,alpha=1-r/10,pr=P();
+  const vol=Math.max(0,(pr.noise-.9)/1.0),stick=Math.max(0,pr.lag1+.1)*2.5;
+  const PS=PERSONA[per]||PERSONA.none,AM=ageMods();
+  const surgeK=PS.surge?(.45+.55*(.5+.5*Math.sin(2*Math.PI*clock/7))):1;
+  const beat=.9,bp=(clock%beat)/beat,pain=ampN*surgeK;
+  const pulseK=PS.pulse*AM.pulse,shim=PS.shimmer*AM.high,spark=PS.shimmer*AM.buzz,steady=1/Math.sqrt(AM.cons),drone=PS.drone;
+  if(nextStrike>clock+5)nextStrike=clock;
+  // Striker: data peaks become accented hits inside the same noise voices, seen and heard at the same moment
+  const drS=(r-prevR)/Math.max(dt,1e-3),peak=prevDr>.02&&drS<=.02&&r>2;prevR=r;prevDr=drS;
+  // Wave: each peak in the pain data is one hit, drawn as a front sweeping across the particles and heard sweeping across the stereo field
+  if(per==='surfer'&&playing&&st.phase>0&&peak&&clock-lastWave>1.2){lastWave=clock;wDir=-wDir;const LATw=AC&&AC.state==='running'?(AC.outputLatency||0)+(AC.baseLatency||0):0,str=Math.min(1.3,.6+.6*pain);
+    WEV.push({t:clock+LATw+.03,dir:wDir,str});if(NODE&&AC.state==='running')NODE.port.postMessage({wave:{at:AC.currentTime+.03,dir:wDir,str}})}
+  WEV=WEV.filter(ev=>clock-ev.t<1.2);
+  const strikeAt=(str)=>{const LAT=AC&&AC.state==='running'?(AC.outputLatency||0)+(AC.baseLatency||0):0,DL=.03,x0=W*(.2+.6*Math.random());
+    strikes.push({x:x0,y:H*(.2+.6*Math.random()),t:clock+LAT+DL,str});if(strikes.length>6)strikes.shift();
+    if(NODE&&AC.state==='running')NODE.port.postMessage({acc:{at:AC.currentTime+DL,str,pan:x0/W*2-1,g:Math.floor(Math.random()*7)}})};
+  if(PS.strike&&playing&&st.phase>0&&pain>.05){
+    if(peak)strikeAt(Math.min(1.4,.8+.6*pain));
+    else if(clock>nextStrike){strikeAt(.45+.45*pain);nextStrike=clock-Math.log(Math.random())/(.4+1.8*pain)}}
+  strikes=strikes.filter(k=>clock-k.t<.6);
+  const keep=Math.round(255*Math.min(.88,0.7+0.14*stick*pain+0.06*(1-pain)));
+  const d8=buf.data;for(let i=0;i<d8.length;i+=4){d8[i]=(d8[i]*keep)>>8;d8[i+1]=(d8[i+1]*keep)>>8;d8[i+2]=(d8[i+2]*keep)>>8}
+  const cx=W/2,cy=H/2,S=Math.min(W,H),tm=clock,aw=2*Math.PI,ak=2*Math.PI*10/W;
+  const jit=S*.0022*(1+2.2*vol)*pain*steady*(PS.jit||1),al=S*.005*alpha,freq=.8+2.6*vol,warm=Math.min(1,pain*1.1),gain=.55*Math.sqrt(12000/Math.max(1000,N))*Math.sqrt(W*H/1.2e6);
+  const sc=r/Math.max(1,painLevel());
+  const E={t:tm,r,pn:pain,al:alpha,sc,bp,beatOn:PS.pulse>0,h:st.h,rot:rot0,hl:p=>CL[p]==prof?1:.42};
+  const CV={cy:Math.cos(VIEW.yaw),sy:Math.sin(VIEW.yaw),cp:Math.cos(VIEW.pitch),sp:Math.sin(VIEW.pitch),D:Math.max(W,H)*1.1,dk:.22+.75*Math.min(1,Math.abs(VIEW.tz)*1.6+Math.abs(VIEW.yaw)+Math.abs(VIEW.pitch))};camCV=CV;
+  const sc_=SCN[sel],MODON=NODE&&AC&&AC.state==='running'&&VIDX&&VPOOL;
+  if(MODON){if(!MVX||MVX.length!==nP){MVX=new Float32Array(nP);MVD=new Float32Array(nP);MVN=new Float32Array(nP);MVB=new Float32Array(nP)}MVX.fill(0);MVD.fill(0);MVN.fill(0);MVB.fill(0)}
+  for(let i=0;i<N;i++){
+    ZO=NaN;sc_.pos(i,E);let x=X,y=Y;const p=PH[i],zq=isNaN(ZO)?DZ[i]*S*CV.dk:ZO;
+    const aph=ak*x-aw*tm;y+=Math.sin(aph)*al;
+    const n1=Math.sin(tm*freq*(1+p*.1)+p)*.6+Math.sin(tm*freq*2.3+p*1.7)*.4*(1-Math.min(.8,stick*.4)),n2=Math.cos(tm*freq*1.3+p*2.1)*.6+Math.cos(tm*freq*3.1+p)*.4*(1-Math.min(.8,stick*.4));
+    x+=n1*jit;y+=n2*jit;
+    let e=0;if(PS.pulse>0){const dx=x-cx,dy=y-cy,dd=Math.sqrt(dx*dx+dy*dy)+1;e=erpAt(r,((bp-dd/S*.6+2)%1)*beat*1000-40);const push=e*S*.012*pulseK;x+=dx/dd*push;y+=dy/dd*push}
+    if(shim>0){x+=Math.sin(tm*26*AM.high+p*3.1)*S*.003*shim*pain;y+=Math.cos(tm*31*AM.high+p*2.3)*S*.003*shim*pain}
+    if(drone>0){y+=Math.sin(x*.005-tm*.9)*S*.018*drone*pain;x+=Math.cos(y*.004-tm*.6)*S*.007*drone*pain}
+    let wfl=0;for(let q=0;q<WEV.length;q++){const ev=WEV[q];if(tm<ev.t)continue;const lt=(tm-ev.t)-(ev.dir>0?x/W:1-x/W)*.35;if(lt>-.05&&lt<.7){const w=erpAt(r,lt*1000-40);x+=w*S*.035*ev.str*ev.dir;wfl+=Math.max(0,w)*.9*ev.str}}
+    for(let q=0;q<strikes.length;q++){const k=strikes[q];if(tm<k.t)continue;const dx=x-k.x,dy=y-k.y,dd=Math.sqrt(dx*dx+dy*dy)+1,f=erpAt(r,(tm-k.t)*1000-40)*Math.exp(-dd/(S*.16))*S*.1*(k.str||1);x+=dx/dd*f;y+=dy/dd*f}
+    // free camera: the picture is a 3D point cloud (depth from the data); turn, slide and fly through it
+    let pf=1;{const px=x-W/2,py=y-H/2,x1=px*CV.cy+zq*CV.sy,z1=-px*CV.sy+zq*CV.cy,y1=py*CV.cp-z1*CV.sp,z2=py*CV.sp+z1*CV.cp-VIEW.tz*CV.D,d=CV.D+z2;
+      if(d<CV.D*.006)continue;pf=CV.D/d;x=W/2+(x1-VIEW.tx*S)*pf;y=H/2+(y1-VIEW.ty*S)*pf}
+    let vo=-1;if(VIDX){const el=EL[i]===-2?sc_.eld(i,E):EL[i];if(el>=0&&VPOOL){const pl_=VPOOL[el];if(pl_.length)vo=pl_[Math.max(0,Math.min(pl_.length-1,Math.floor(x/W*pl_.length)))]}else{vo=VIDX[PI[i]];if(vo>=VC)vo=-1}}
+    if(MODON){const v=vo;if(v>=0&&v<VC){MVX[v]+=x;MVB[v]+=BR*(1+wfl);const ddx=x-OPX[i],ddy=y-OPY[i];MVD[v]+=Math.min(S*.05,Math.sqrt(ddx*ddx+ddy*ddy));MVN[v]++}OPX[i]=x;OPY[i]=y}
+    const rad=pf<1.25?0:Math.min(56,1.7*Math.pow(pf,1.45)),sz=2,xi=x|0,yi=y|0;if(rad<=1.5&&(xi<0||yi<0||xi>=W-sz||yi>=H-sz))continue;if(rad>1.5&&(xi<-rad||yi<-rad||xi>W+rad||yi>H+rad))continue;
+    const ve=ENV&&vo>=0&&vo<ENV.length?ENV[vo]:-1;
+    const sh=(1+wfl)*(ve>=0?(.45+1.2*ve):1)*BR*(.8+.2*Math.sin(aph)*alpha+.5*Math.max(0,e)*pain*PS.flash)*(spark>0&&Math.sin(tm*40+p*13)>.93?1+1.6*spark*pain:1)*(drone>0?1-.2*drone*pain:1);
+    const j3=i*3,m=MX,R0=C1[j3]*(1-m)+C2[j3]*m,G0=C1[j3+1]*(1-m)+C2[j3+1]*m,B0=C1[j3+2]*(1-m)+C2[j3+2]*m;
+    const Rr=(R0*(1-warm*.4)+255*warm*.4)*sh*gain,Gg=(G0*(1-warm*.4)+122*warm*.4)*sh*gain,Bb=(B0*(1-warm*.4)+79*warm*.4)*sh*gain;
+    if(rad<=1.5){const bf=Math.min(1.6,Math.sqrt(pf));for(let oy=0;oy<2;oy++)for(let ox=0;ox<2;ox++){const k=((yi+oy)*W+xi+ox)*4;d8[k]=Math.min(255,d8[k]+Rr*bf);d8[k+1]=Math.min(255,d8[k+1]+Gg*bf);d8[k+2]=Math.min(255,d8[k+2]+Bb*bf)}}
+    else{// up close: a soft glowing disc that grows as you approach and passes by you
+      const R=Math.ceil(rad),r2=rad*rad,kb=4.2/(1+rad*.07),x0=Math.max(0,xi-R),x1_=Math.min(W-1,xi+R),y0=Math.max(0,yi-R),y1_=Math.min(H-1,yi+R);
+      for(let yy=y0;yy<=y1_;yy++){const dy=yy-y;for(let xx=x0;xx<=x1_;xx++){const dx=xx-x,q=1-(dx*dx+dy*dy)/r2;if(q<=0)continue;const w=q*q*kb,k=(yy*W+xx)*4;d8[k]=Math.min(255,d8[k]+Rr*w);d8[k+1]=Math.min(255,d8[k+1]+Gg*w);d8[k+2]=Math.min(255,d8[k+2]+Bb*w)}}}
+  }
+  ctx.putImageData(buf,0,0);
+  if(sc_.overlay)sc_.overlay(ctx,E);
+  // every persona: send each voice where its particles are (pan) and how much they move (volume), so each visual element drives its own part of the sound
+  if(MODON&&(modT=(modT+1)%2)===0){const V=Math.min(VC,nP),pan=new Float32Array(V),amp=new Float32Array(V);let ms=0,mb=0,mc=0;
+    for(let v=0;v<V;v++)if(MVN[v]>0){ms+=MVD[v]/MVN[v];mb+=MVB[v]/MVN[v];mc++}const mean=mc?ms/mc:1,meanB=mc?mb/mc:1;
+    for(let v=0;v<V;v++){if(MVN[v]>0){pan[v]=Math.max(-1,Math.min(1,(MVX[v]/MVN[v]/W*2-1)*1.25));amp[v]=Math.min(2.5,Math.pow(.45*(MVD[v]/MVN[v])/(mean+1e-6)+.55*(MVB[v]/MVN[v])/(meanB+1e-6),1.6))}else{pan[v]=0;amp[v]=1}}
+    NODE.port.postMessage({mod:{pan,amp}},[pan.buffer,amp.buffer])}
+  soundState(st,r,pain,ampN,alpha,PS,AM,pr,vol);
+  smooth+=(r-smooth)*.2;
+  $('#hud').innerHTML=`<span><b>${smooth.toFixed(1)}</b>pain / 10</span><span><b>${(D.fit.slope*smooth+(smooth>0?D.fit.icpt:0)).toFixed(1)} µV</b>Cz N2–P2</span><span><b>${Math.round((1-smooth/10)*100)}%</b>alpha share</span><span><b>${PERSONA[per]?PERSONA[per].name:'No persona'}</b>${PERSONA[per]?ageB:'profile only'}</span>`;
+  $('#phase').innerHTML=`${st.label}<small>${st.sub}</small>`;
+  drawHead();
+  requestAnimationFrame(frame)};
+// ---------- sound: one band-passed noise voice per person ----------
+let AC=null,NODE=null,MGN=null,ENV=null,VC=256,VPERM=null,VIDX=null,sndShow=0;
+const SPRE={none:{att:.03,dec:.35,sus:.35,rate:1.1},pounder:{att:.004,dec:.22,sus:.06,rate:0,beat:1},striker:{att:.002,dec:.09,sus:0,rate:2.4,cluster:1},
+  ringer:{att:.35,dec:1.2,sus:.9,rate:.15,ring:1},hummer:{att:.9,dec:2,sus:.95,rate:.1},surfer:{att:.008,dec:.35,sus:.35,rate:.4}};
+const HARM=[1,2,3,4,5,6,8,10,12,16];
+const makePools=()=>{if(!VHI)return;VPOOL=[...Array(10)].map(()=>[]);for(let v=0;v<Math.min(VC,VHI.length);v++)VPOOL[VHI[v]].push(v)};
+const voiceData=()=>{const r=rngF(4242),perm=[...Array(nP).keys()];for(let i=nP-1;i>0;i--){const j=Math.floor(r()*(i+1));[perm[i],perm[j]]=[perm[j],perm[i]]}
+  VPERM=perm;VIDX=new Int16Array(nP).fill(-1);perm.forEach((p,v)=>VIDX[p]=v);VHI=Int8Array.from(perm,p=>Math.min(HARM.length-1,Math.floor(RANK[p]/nP*HARM.length)));makePools();
+  return{h:perm.map(p=>HARM[Math.min(HARM.length-1,Math.floor(RANK[p]/nP*HARM.length))]),pan:perm.map(p=>Math.max(-1,Math.min(1,PX[p]))),
+    det:perm.map(p=>(r()*2-1)*(.5+NOI[p]/1.7)),vol:perm.map(p=>Math.max(0,Math.min(1,(NOI[p]-.9)/.9))),lag:perm.map(p=>LAG[p]),drift:perm.map(p=>DRF[p]),delay:perm.map(p=>Math.min(1,Math.hypot(PX[p],PY[p])/1.2)),ph:perm.map(()=>r()*6.2832)}};
+const n2latAt=r=>{const R=D.erp.rating;if(r<=1)return R[0].n2lat;const l=Math.min(10,r),lo=Math.floor(l)-1,hi=Math.min(9,lo+1),f=l-1-lo;return R[lo].n2lat*(1-f)+R[hi].n2lat*f};
+const soundState=(st,r,pain,ampN,alpha,PS,AM,pr,vol)=>{if(!NODE)return;
+  const k=per in SPRE?per:'none',b=SPRE[k],latN=n2latAt(r)/230,stick=Math.max(0,pr.lag1+.05);
+  const swell=k=='surfer'?(.45+.55*(.5+.5*Math.sin(2*Math.PI*clock/7))):1;
+  const S={pn:pain,voices:VC,att:Math.max(.002,b.att*latN),dec:b.dec*(.7+2.5*stick),sus:b.sus,rel:.25+3.5*alpha,rate:b.rate*(.6+vol),
+    beatOn:!!b.beat,beat:.9,cluster:!!b.cluster,ring:!!b.ring,detune:pain*(60+140*vol),stretch:.05*pain,driftC:pr.drift*20*pain,
+    Q:(3+150*alpha*alpha)*(k=='pounder'?(alpha>.9?1:.22):1),cut:(250+7500*Math.pow(ampN,1.3))*AM.high*(k=='hummer'?.45:1)*(k=='ringer'?1.2:1)*(k=='pounder'?.6:1),Qg:.7+3*pain,
+    f0:(k=='hummer'||k=='pounder'?55:k=='ringer'?220:110)*Math.sqrt(AM.high),trem:.3*alpha,wob:.25*pain*(.5+vol),loud:Math.min(1,pain*3)*(.3+.7*ampN),silence:.6*alpha*alpha,gain:.9,modOn:true,surf:k==='surfer',swPh:(clock/7)%1,swellV:1,fb:(k=='striker'||k=='ringer')?.005*Math.min(1,pain*1.2):0,fbF:7200*Math.sqrt(AM.high)};
+  NODE.port.postMessage({state:S});
+  if(++sndShow%10===0){const cons=Math.round(100*Math.max(0,1-Math.min(1,S.detune/200)*.7-(1-S.Q/153)*.3));
+    $('#sndOut').innerHTML=[['Consonance',cons+'%'],['Attack',Math.round(S.att*1000)+' ms'],['Decay',Math.round(S.dec*1000)+' ms'],['Sustain',Math.round(S.sus*100)+'%'],['Release',S.rel.toFixed(1)+' s'],['Resonance (band Q)',Math.round(S.ring?Math.max(S.Q,80):S.Q)],['Cutoff',Math.round(S.cut).toLocaleString()+' Hz'],['Detune',Math.round(S.detune)+' cents']].map(x=>`<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join('')}};
+const startSound=async()=>{const b=$('#sndBtn');
+  if(AC){if(AC.state==='running'){await AC.suspend()}else{await AC.resume();MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.3)}setSndLabel();return}
+  try{AC=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'playback'});await AC.audioWorklet.addModule('audio-worklet.js');
+    NODE=new AudioWorkletNode(AC,'pain-voices',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2]});MGN=AC.createGain();MGN.gain.value=0;
+    NODE.connect(MGN).connect(AC.destination);NODE.port.postMessage({voices:voiceData()});NODE.port.onmessage=e=>{ENV=e.data.env};
+    AC.resume().catch(()=>{});MGN.gain.setTargetAtTime(+$("#vol").value*1.5,AC.currentTime,.6);setTimeout(()=>{if(typeof setSndLabel==='function')setSndLabel()},50)}
+  catch(err){AC=null;NODE=null;$('#sndMsg').textContent='Sound could not start here: '+err.message}};
+$('#sndBtn').onclick=startSound;
+// sound is on by default: build the engine at load; browsers keep it paused until the first click, tap or key press anywhere
+const setSndLabel=()=>{const b=$('#sndBtn');if(!AC)return;const on=AC.state==='running';b.textContent=on?'Sound off':'Sound on';b.setAttribute('aria-pressed',on);$('#sndMsg').textContent=on?'Starts quiet. Voices above about 400 may stutter on slower devices.':'Sound starts with your first click or key press on the page.'};
+const autoSound=async()=>{if(AC)return;await startSound();if(AC){AC.onstatechange=setSndLabel;setSndLabel();
+  let userOff=false;$('#sndBtn').addEventListener('click',()=>{userOff=true},{once:true,capture:true});
+  const wake=()=>{if(AC&&AC.state!=='running'&&!userOff){AC.resume().then(()=>MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.6))}};
+  ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,wake,{once:true,capture:true}))}};
+$('#vol').oninput=e=>{if(MGN)MGN.gain.setTargetAtTime(+e.target.value*1.5,AC.currentTime,.05)};
+$('#voices').oninput=e=>{VC=+e.target.value;makePools();$('#voicesOut').textContent=VC+(VC>=nP?' (one per person)':'')};
+// ---------- trace ----------
+let traceSvg=null,traceW=0,traceH=0,head=null;
+const drawTrace=()=>{const el=$('#trace');traceW=el.clientWidth;traceH=el.clientHeight;if(!traceW||!D)return;
+  const m={l:36,r:12,t:16,b:22},x=t=>m.l+t/TOTAL*(traceW-m.l-m.r),y=v=>traceH-m.b-v/10*(traceH-m.t-m.b);
+  let pts=[];for(let t=0;t<=TOTAL;t+=.1)pts.push(x(t).toFixed(1)+','+y(state(t).r).toFixed(1));
+  const bands=[[0,T_SIL,'Silence'],[T_SIL,T_SIL+T_ON+T_PAIN,'Pain'],[T_SIL+T_ON+T_PAIN,T_SIL+T_ON+T_PAIN+T_REL,'Relief'],[TOTAL-T_END,TOTAL,wear?HZ+' h':'Silence']];
+  let g=bands.map((b,i)=>`<rect x="${x(b[0])}" y="${m.t}" width="${x(b[1])-x(b[0])}" height="${traceH-m.t-m.b}" fill="${i%2?'#101310':'#0b0d0b'}"/><text x="${x(b[0])+6}" y="${traceH-6}" fill="#979b91" font-size="12">${traceW<520&&i==3?'':b[2]}</text>`).join('');
+  for(const v of [0,5,10])g+=`<line x1="${m.l}" x2="${traceW-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="#20241f"/><text x="${m.l-8}" y="${y(v)+4}" fill="#979b91" font-size="12" text-anchor="end">${v}</text>`;
+  g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${COL[prof]}" stroke-width="2"/><line id="head" y1="${m.t-6}" y2="${traceH-m.b}" stroke="#e9ebe6" stroke-width="1.5"/><circle id="headDot" r="5" fill="#e9ebe6" stroke="#0b0d0b" stroke-width="2"/>`;
+  el.innerHTML=`<svg viewBox="0 0 ${traceW} ${traceH}">${g}</svg>`;traceSvg=el.querySelector('svg');head={l:el.querySelector('#head'),d:el.querySelector('#headDot'),x,y};
+  traceSvg.onclick=e=>{const b=traceSvg.getBoundingClientRect();clock=Math.max(0,Math.min(TOTAL-.01,((e.clientX-b.left)*traceW/b.width-m.l)/(traceW-m.l-m.r)*TOTAL))}};
+const drawHead=()=>{if(!head)return;const X=head.x(clock);head.l.setAttribute('x1',X);head.l.setAttribute('x2',X);head.d.setAttribute('cx',X);head.d.setAttribute('cy',head.y(state(clock).r))};
+// ---------- UI ----------
+const pick=i=>{sel=i;$('#scene').value=String(i);if(typeof resetView==='function')resetView();$('#selName').textContent=SCN[i].name;$('#selMode').textContent=SCN[i].txt;u32&&u32.fill(0xff050605);build()};
+// ---------- free camera controls ----------
+const syncView=()=>{$('#vx').value=VIEW.tx;$('#vy').value=VIEW.ty;$('#vz').value=VIEW.tz;
+  const deg=v=>{let d=Math.round(v*180/Math.PI)%360;if(d>180)d-=360;if(d<-180)d+=360;return(d>0?'+':'')+d+'°'},f=v=>(v>0?'+':'')+v.toFixed(2);
+  $('#camRead').textContent=`Turn ${deg(VIEW.yaw)} · Tilt ${deg(VIEW.pitch)} · X ${f(VIEW.tx)} Y ${f(VIEW.ty)} Z ${f(VIEW.tz)}`;
+  const dv=Object.assign({yaw:0,pitch:0,tx:0,ty:0,tz:0},SCN[sel].view||{});document.querySelector('.camui').classList.toggle('moved',['yaw','pitch','tx','ty','tz'].some(k=>Math.abs(VIEW[k]-dv[k])>1e-6))};
+const clampV=()=>{VIEW.pitch=Math.atan2(Math.sin(VIEW.pitch),Math.cos(VIEW.pitch));VIEW.yaw=Math.atan2(Math.sin(VIEW.yaw),Math.cos(VIEW.yaw));VIEW.tx=Math.max(-4,Math.min(4,VIEW.tx));VIEW.ty=Math.max(-4,Math.min(4,VIEW.ty));VIEW.tz=Math.max(-1,Math.min(1.6,VIEW.tz));syncView()};
+['vx','vy','vz'].forEach((id,k)=>$('#'+id).oninput=e=>{VIEW[['tx','ty','tz'][k]]=+e.target.value;syncView()});
+const sceneView=()=>Object.assign({yaw:0,pitch:0,tx:0,ty:0,tz:0},SCN[sel].view||{});let dragMove=false;const setMode=m=>{dragMove=m;$('#modeTurn').setAttribute('aria-pressed',String(!m));$('#modeMove').setAttribute('aria-pressed',String(m));cv.style.cursor=m?'move':'grab'};$('#modeTurn').onclick=()=>setMode(false);$('#modeMove').onclick=()=>setMode(true);
+const resetView=()=>{VIEW=sceneView();syncView()};$('#vreset').onclick=resetView;$('#camReset').onclick=resetView;syncView();
+{const ptrs=new Map();let pinch=0;
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,b:e.button,sh:e.shiftKey});stage.focus({preventScroll:true})});
+ cv.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+   if(ptrs.size>=2){const a=[...ptrs.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch)VIEW.tz+=(d-pinch)*.003;pinch=d;VIEW.tx-=dx*.0015;VIEW.ty-=dy*.0015}
+   else if((dragMove?!(p.sh||e.shiftKey):(p.sh||e.shiftKey))||p.b===2){VIEW.tx-=dx*.003;VIEW.ty-=dy*.003}else{VIEW.yaw+=dx*.005;VIEW.pitch+=dy*.005}clampV()});
+ const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('contextmenu',e=>e.preventDefault());
+ cv.addEventListener('wheel',e=>{e.preventDefault();VIEW.tz-=e.deltaY*.0006;clampV()},{passive:false});
+ stage.addEventListener('keydown',e=>{const k=e.key.toLowerCase(),st=.06,m={w:['tz',.03],s:['tz',-.03],a:['tx',-st],d:['tx',st],q:['ty',-st],e:['ty',st],r:['ty',-st],f:['ty',st],arrowleft:['tx',-st],arrowright:['tx',st],arrowup:['ty',-st],arrowdown:['ty',st],m:null}[k];if(k==='m'){setMode(!dragMove);return}if(!m)return;e.preventDefault();VIEW[m[0]]+=m[1];clampV()});}
+$('#scene').innerHTML=SCN.map((c,i)=>`<option value="${i}">${c.name} · ${c.tag}</option>`).join('');$('#scene').onchange=e=>pick(+e.target.value);
+$('#profChips').innerHTML=NAMES.map((n,i)=>`<button class="chip" data-p="${i}" aria-pressed="${i===prof}"><i style="background:${COL[i]}"></i>${n}</button>`).join('');
+document.querySelectorAll('#profChips .chip').forEach(c=>c.onclick=()=>{prof=+c.dataset.p;document.querySelectorAll('#profChips .chip').forEach(x=>x.setAttribute('aria-pressed',x===c));drawTrace()});
+$('#drug').onchange=e=>{drug=e.target.value;timeline();drawTrace()};
+$('#wear').onchange=e=>{wear=e.target.checked;timeline();drawTrace()};
+$('#density').oninput=e=>{N=+e.target.value;$('#densOut').textContent=N.toLocaleString()};$('#density').onchange=()=>{build()};
+$('#playBtn').onclick=()=>{playing=!playing;$('#playBtn').textContent=playing?'Pause':'Play'};
+$('#restart').onclick=()=>{clock=0;u32&&u32.fill(0xff050605)};
+$('#shuffle').onclick=()=>{seedN++;u32&&u32.fill(0xff050605);build()};
+const PERSONA={none:{name:'Raw',pulse:0,flash:1,shimmer:0,drone:0,surge:0,strike:0,jit:1},
+ pounder:{name:'Pounder',pulse:1.9,flash:1.8,shimmer:0,drone:0,surge:0,strike:0,jit:.7,
+   line:'Pain as a hammer that keeps time with the heart.',time:'Pulsing',timbre:'Impact: hammer, drum',body:'Heartbeat, blood, throb',q:[0,4,7],
+   why:p=>[`Built from pulse words that come with an impact sound or a heartbeat cue: ${p.codes['timbre:impact']}% name a hammer, drum or pounding, ${p.codes['body:blood']}% a heartbeat, blood or throb.`,`The strongest pairing in the whole survey: 48 of the 80 answers with a pulse also carry an impact sound.`,`The clearest age story: ${p.byage['18–34'].pct}% of 18–34s are Pounders, ${p.byage['65–75'].pct}% of 65–75s.`],
+   sound:'A deep, noisy thud on a heartbeat grid, the pulsatile form of tinnitus: an octave lower than the others, wide noise bands and a darker filter; each thump shaped by the measured Cz waveform.',
+   moves:'The only persona with a steady beat: the measured brain response repeats every 0.9 s (a design tempo near resting heart rate), hitting hard, with a flash on every beat.'},
+ striker:{name:'Striker',pulse:0,flash:1.2,shimmer:0,drone:0,surge:0,strike:1,jit:.8,
+   line:'Pain that lands without warning: stabs, shocks, lightning.',time:'Sudden',timbre:'Impact',body:'Touch: stab, knife, shock',q:[0,1,5],
+   why:p=>[`Sudden or stabbing time words with an impact sound or a touch cue: ${p.codes['timbre:impact']}% impact, ${p.codes['tactile']}% touch (knives, burning, shocks).`,`${p.codes['time:waves']}% also mention waves: the strikes come in clusters.`,`The most female persona: ${p.fem}% women, against about half in the full sample.`],
+   sound:'A faint high feedback note under unpredictable transients inside the same noise voices: at each peak in the pain signal the high voices add a short sparkle about two octaves up, around 4–7 kHz, while lows and mids stay still; smaller hits in between come faster as pain rises.',
+   moves:'No steady beat. Each strike is the measured brain response fired once from a random point, at random moments that come faster as pain rises.'},
+ ringer:{name:'Ringer',pulse:0,flash:.6,shimmer:1,drone:0,surge:0,strike:0,jit:.5,
+   line:'Pain as a ring or buzz that never switches off.',time:'Constant',timbre:'Buzz, ringing, static',body:'Ears, tinnitus',q:[0,3,6],
+   why:p=>[`Constant time words with a buzz, ring or tinnitus cue: ${p.codes['timbre:buzz']}% buzz or static, ${p.codes['timbre:ringing']}% ringing, ${p.codes['pitch:high']}% high-pitched.`,`${p.codes['body:tinnitus']}% name tinnitus or ringing ears outright, the closest match to your tinnitus idea.`,`The youngest persona, average age ${p.age}; it matches under-50s hearing pain higher and buzzier.`],
+   sound:'A steady narrow-band high tone over band-limited noise, the classic tinnitus sound, with a faint high feedback note around 7 kHz on top.',
+   moves:'No beat at all: a fine, fast, continuous shimmer with glittering sparkles. Pain sets how strong it is.'},
+ hummer:{name:'Hummer',pulse:0,flash:.6,shimmer:0,drone:1,surge:0,strike:0,jit:.4,
+   line:'Pain as an engine in the background that never stops.',time:'Constant',timbre:'Hum, drone, engine',body:'Ache, pressure',q:[2,1,4],
+   why:p=>[`Constant time words with a drone or a low pitch: ${p.codes['timbre:drone']}% hum, engine or fridge, ${p.codes['pitch:low']}% low, deep or dull.`,`The smallest persona (${p.n} people). Its core is clear, but treat its age split as a sketch.`,`${p.codes['time:waves']}% say it sometimes surges, and ${p.codes['tactile']}% describe an ache or pressure: a drone with slow swells inside it.`],
+   sound:'A low drone with slow beating between close frequencies; it fills space rather than striking.',
+   moves:'No beat: broad, slow, heavy waves roll continuously through the field, dimmer, with little jitter.'},
+ surfer:{name:'Wave',pulse:0,flash:1,shimmer:0,drone:0,surge:1,strike:0,jit:.9,
+   line:'Pain that comes and goes in waves and tides.',time:'Waves, surges',timbre:'Varies: sirens, rings, impacts',body:'No dominant cue',q:[4,6,2],
+   why:p=>[`Built on wave words alone: waves, surges, tides, building, coming and going. The timbre varies from person to person.`,`${p.codes['time:constant']}% also call it constant: a floor that never clears, with swells on top.`,`${p.fem}% women, the second most female persona.`],
+   sound:'Hits and rails: at each peak in the pain data a short hit sweeps across the stereo field like a shockwave, in step with a front sweeping across the particles, with high spray above; between hits, mid voices clack in metallic pairs like heavy wheels over rail joints',
+   moves:'No beat: the whole field rises and falls in slow swells on a 7-second cycle (a design period); the data level sets how high each swell goes.'}};
+const PER_KEYS=['pounder','striker','ringer','hummer','surfer'],BANDS=['18–34','35–49','50–64','65–75'];
+const ageMods=()=>{if(!D)return{high:1,buzz:1,cons:1,pulse:1};const b=D.verb.byage[ageB],o=D.verb.overall,pul=(b['time:pulsing']+b['body:blood'])/(o['time:pulsing']+o['body:blood']);
+  return{high:b['pitch:high']/o['pitch:high'],buzz:Math.max(.3,b['timbre:buzz']/o['timbre:buzz']),cons:b['time:constant']/o['time:constant'],pulse:pul}};
+const setPer=k=>{per=k;document.querySelectorAll('#perChips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.k===k))};
+const setAge=b=>{ageB=b;document.querySelectorAll('#ageChips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.b===b));const m=ageMods(),f=v=>'×'+v.toFixed(2);
+  $('#modsOut').textContent=`vs. all ages: pitch ${f(m.high)} · buzz ${f(m.buzz)} · constancy ${f(m.cons)} · pulse ${f(m.pulse)}`};
+const renderPersonas=()=>{const P=D.personas;
+  $('#perChips').innerHTML=['none',...PER_KEYS].map(k=>`<button class="chip" data-k="${k}" aria-pressed="${k===per}">${PERSONA[k].name}</button>`).join('');
+  document.querySelectorAll('#perChips .chip').forEach(c=>c.onclick=()=>setPer(c.dataset.k));
+  $('#ageChips').innerHTML=BANDS.map(b=>`<button class="chip" data-b="${b}" aria-pressed="${b===ageB}">${b}</button>`).join('');
+  document.querySelectorAll('#ageChips .chip').forEach(c=>c.onclick=()=>setAge(c.dataset.b));setAge(ageB);
+  const mx=Math.max(...PER_KEYS.flatMap(k=>BANDS.map(b=>P[k].byage[b].pct)));
+  $('#perList').innerHTML=PER_KEYS.map(k=>{const p=P[k],d=PERSONA[k];
+    return `<article class="persona" id="p-${k}"><div><h3>${d.name}</h3><p class="line">${d.line}</p>
+      <div class="trio"><span>Time · <b>${d.time}</b></span><span>Timbre · <b>${d.timbre}</b></span><span>Body · <b>${d.body}</b></span></div>
+      <div class="stats"><div><strong>${p.n}</strong>people</div><div><strong>${p.share}%</strong>of answers</div><div><strong>${Math.round(p.age)}</strong>avg age</div><div><strong>${p.fem}%</strong>women</div></div>
+      ${d.q.map(i=>`<blockquote>“${(p.quotes[i]||'').replace(/</g,'&lt;')}”</blockquote>`).join('')}</div>
+      <div><h4>What makes it <span class="tag ev d">Measured</span></h4><ul>${d.why(p).map(x=>`<li>${x}</li>`).join('')}</ul>
+        <h4>How it sounds <span class="tag ev c">Design, for Phase 3</span></h4><ul><li>${d.sound}</li></ul>
+        <h4>How it moves on the stage <span class="tag ev c">Design</span></h4><ul><li>${d.moves}</li></ul></div>
+      <div><h4>Share of each age group who are ${d.name}s</h4><div class="ages">${BANDS.map(b=>{const a=p.byage[b],thin=a.n<10;return `<div class="age"><span>${b}</span><span class="tr"><span class="fl${thin?' thin':''}" style="width:${a.pct/mx*100}%"></span></span><b>${a.pct}% <i>n=${a.n}</i></b></div>`}).join('')}</div>
+        <p class="note">Striped bars rest on fewer than 10 people: read them as a sketch.</p>
+        <div class="row" style="margin-top:16px;flex-wrap:wrap"><button class="btn solid" data-play="${k}" data-age="18–34">Play at 18–34</button><button class="btn" data-play="${k}" data-age="65–75">Play at 65–75</button></div></div></article>`}).join('');
+  document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{setPer(b.dataset.play);setAge(b.dataset.age);clock=T_SIL+T_ON+2;playing=true;$('#playBtn').textContent='Pause';stage.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'})});
+  $('#perFoot').textContent=`${PER_KEYS.reduce((a,k)=>a+P[k].n,0)} of 600 answers form the five personas. The other ${P._unassigned} either describe no sound, give a timbre with no time pattern (screeching, sirens) or a time pattern with no timbre (“constant”); these can be layered onto a persona rather than standing alone. Age groups: ${BANDS.map(b=>b+' n='+P._bands[b]).join(', ')}. Different people at different ages: this shows how pain sounds differ between age groups, not how one person's changes over time.`};
+const MAPS=[['Wave: hits, shockwave, rails, spray','From the Wave persona\'s own words (shockwaves, storm waves on rocks, heavy trains rolling past, sharp and high), inside the same noise voices. Each peak in the pain data is one hit: a front sweeps across the particles (shaped by the measured Cz response) and, at the same moment, the voices re-attack in the same direction across the stereo field, timed from where each voice\'s particles are, with spray two octaves up. Between hits, mid voices clack in metallic pairs that run faster as pain rises.','d','Measured + design'],
+ ['Picture to sound, element by element','Every visual element drives its own part of the sound. A person\'s particles drive that person\'s voice. Structural elements (rings, sheets, bands, terrain rows) drive the voices on one harmonic (on Membrane the orbiting people join the ring they are riding), from the lowest (ring or rating 1) to the highest (the outer ring or rating 10), split into left-to-right sections. Each voice pans to where its particles are and gets louder the more they move and glow than the rest (so active rings sound and dim rings recede); particles light up with the voice they drive.','d','Measured + design'],
+ ['Feedback note (Striker and Ringer)','A very faint, near-pure tone around 7 kHz (shifted with age) that wavers slightly like audio feedback. It grows with pain, leans in a little at each peak and fades away as the sound reaches silence.','c','Design'],
+ ['Striker hits','At each peak in the pain signal (and at smaller random strikes in between), the high noise voices (above about 1 kHz) add a short sparkle of their own noise about two octaves up, around 4–7 kHz; lows and mids stay still. Same noise system, seen and heard at the same moment as the shockwave.','d','Measured + design'],
+ ['Voices','One band-passed noise voice per person, up to all 678; with fewer voices, people share. Each particle lights with its own voice\'s envelope.','c','Design + data'],
+ ['Consonance to dissonance','Silence: every voice sits exactly on the harmonic series of one note, in a narrow band, with a shared 10 Hz alpha tremolo, so the sum is a chord. Pain: voices detune by up to about 200 cents (more for people with volatile ratings), partials stretch, bands widen and each voice wobbles on its own.','c','Design + data'],
+ ['Attack','Persona sets the base (Striker and Pounder sharp; Hummer and Wave slow), scaled by the measured N2 latency at the current rating: a faster brain response gives a sharper attack','d','Measured + design'],
+ ['Decay','Profile stickiness and each person\'s own: when one rating carries into the next, the sound lingers longer','d','Measured'],
+ ['Sustain and release','Persona sets the sustain (Ringer and Hummer hold, Striker has none). Release lengthens as alpha grows, so sound blooms into the silence chord','c','Design'],
+ ['Resonance','Band width of each voice: raw noise in pain, near-pure tone in silence; the Ringer keeps its high bands ringing even in pain, like tinnitus. The master filter also resonates more with pain','c','Design'],
+ ['Cutoff','Master low-pass follows the Cz N2–P2 amplitude: about 250 Hz in silence, up to 7–8 kHz at pain 10; age shifts it with the measured pitch difference','d','Measured'],
+ ['Pitch and position','Each person\'s harmonic rises with their pain-level rank; pan follows their left–right place on the profile map','d','Measured'],
+ ['Sound persona','Time × timbre × body pairing from the 600 verbatims; sets pulse strength, shimmer, drone, swells or strikes','d','Measured'],
+ ['Age group','Shifts in pitch, buzz, constancy and pulse for that age group across all 600 answers, applied as multipliers','d','Measured'],
+ ['Scene form','Each scene\'s visual idea, rebuilt from data: rings, streams, bands, terrain, sheets, threads, trees, lines or a funnel, each placed by the 678 people, the 19 Cz waveforms or the relief curve. Reshuffle draws a new random variant.','c','Design + data'],
+ ['Pain level','Profile\'s mean rating, shaped over the session by its measured start-to-end curve (Fading falls, Crescendo climbs)','d','Measured'],
+ ['Pulse through the image','Cz waveform at the current rating, interpolated between the 10 measured levels, travelling outward each beat','d','Measured'],
+ ['Strength of disturbance','N2–P2 µV from the rating fit (1.77 µV per point)','d','Measured'],
+ ['Jitter speed','Profile volatility (rating scatter)','d','Measured'],
+ ['Trail length and smoothness','Profile stickiness (does one trial carry into the next)','d','Measured'],
+ ['Expansion or contraction during pain','Profile session drift (sensitising vs habituating)','d','Measured'],
+ ['Pain to relief','Relief curve fitted to the posted results of two trials (dental NCT05761574, bunion NCT05868122); same curves as the Science board','d','Measured'],
+ ['Silence','Alpha rhythm: a synchronised ripple and shimmer, shown at 1/10 speed (10 Hz would flicker), growing as pain falls','l','Literature'],
+ ['Beat tempo (Pounder only), warm colour shift','0.9 s beat; ember warmth with pain','c','Design']];
+$('#maps').innerHTML=MAPS.map(m=>`<li><strong>${m[0]}</strong><span>${m[1]}</span><span></span><span class="ev ${m[2]}">${m[3]}</span></li>`).join('');
+fetch('data.json').then(r=>r.json()).then(async d=>{D=d;ET=D.erp.t;const r10=D.erp.rating[9];ERPN=(r10.p2-r10.n2)/2;  const TL={dental:'Dental',bunion:'Bunion'};$('#drug').innerHTML=['dental','bunion'].map(k=>`<optgroup label="${TL[k]} surgery · ${D.trials[k].nct}">`+Object.entries(D.trials[k].arms).map(([a,v])=>`<option value="${k}.${a}">${TL[k]} · ${v.label}</option>`).join('')+'</optgroup>').join('');$('#drug').value=drug;
+  prep();timeline();renderPersonas();const ro=new ResizeObserver(()=>{resize();drawTrace()});ro.observe(stage);pick(0);resize();drawTrace();requestAnimationFrame(frame);autoSound()})
+ .catch(e=>{$('#phase').textContent='Data failed to load: '+e.message});
+}
+</script>
+</body>
+</html>
