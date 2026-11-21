@@ -155,7 +155,7 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
 </div>
 
 <nav class="contents" aria-label="Contents"><div class="shell">
-  <a href="#brain">1 · Pain in the brain</a><a href="#words">2 · Pain in words</a><a href="#relief">3 · Pain to relief</a><a href="#sound">4 · Signal to sound</a><a href="#plan">The plan</a><a href="#sources">Data sources</a><a href="#method">Method notes</a><a href="creative.html">Creative board →</a>
+  <a href="#brain">1 · Pain in the brain</a><a href="#words">2 · Pain in words</a><a href="#relief">3 · Pain to relief</a><a href="#sound">4 · Signal to sound</a><a href="#sources">Data sources</a><a href="#method">Method notes</a><a href="creative.html">Creative board →</a>
 </div></nav>
 
 <main class="shell">
@@ -261,13 +261,6 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
   </div>
   <div class="scroll"><table class="stack"><thead><tr><th>Signal</th><th>Source</th><th>Evidence</th><th>Sound parameter</th><th>Tinnitus voice</th></tr></thead><tbody id="mapRows"></tbody></table></div>
   <p class="small" style="margin-top:12px">Measured: computed here from the data. Literature: direction is established in published research; size needs our own data. Design: a creative choice, labelled as such.</p>
-</section>
-
-<section class="chapter" id="plan">
-  <p class="eyebrow">The plan</p>
-  <h2>From two datasets to <em>a defensible score.</em></h2>
-  <div class="plan"><ol id="planRows"></ol></div>
-  <div class="open" id="openQs"></div>
 </section>
 
 <section class="chapter" id="method">
@@ -501,15 +494,6 @@ fetch('data.json').then(r=>r.json()).then(D=>{
   const EV={d:'Measured',l:'Literature',c:'Design'};
   $('#mapRows').innerHTML=MAP.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><span class="ev ${r[2]}">${EV[r[2]]}</span></td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('');
   document.querySelectorAll('.stack').forEach(t=>{const h=[...t.rows[0].cells].map(c=>c.textContent);[...t.tBodies[0].rows].forEach(r=>[...r.cells].forEach((c,i)=>c.dataset.l=h[i]))});
-  // plan
-  const PLAN=[['Weeks 1–2','Lock Phase 1 data','Freeze the EEG analysis and verbatim codes so later phases build on stable numbers.',['Two people hand-code 150 verbatims; check agreement against the keyword rules','Write the EEG feature pipeline as a reusable script (done in draft here)','Confirm with the dataset authors how to cite and use it']],
-    ['Weeks 2–4','Add the silence baseline','Collect or source eyes-closed resting EEG so silence is personal, not assumed.',['Option A: record 3 to 5 minutes eyes-closed per participant, before the pain task','Option B: an open resting-state dataset for a reference alpha range','Extract alpha peak frequency and power per person as the silence signature']],
-    ['Weeks 3–5','Fit the two drug studies','First pass done from the posted results; next, confirm the shapes with hour-by-hour scores.',['Done: curves for all six arms fitted to the published SPID windows','Request per-timepoint pain means (clinical study reports or the sponsor)','Add uncertainty bands once per-timepoint spread is available']],
-    ['Weeks 5–7','Sound engine prototype','Build the Phase 3 instrument with every parameter wired to a named signal.',['Tinnitus voices: high ring, band-limited buzz, pulsatile blood-flow noise','Four profile presets (Fading, Quiet, Sustained, Crescendo) and age-tuned timbres','The silence bed: alpha-rate shimmer that takes over as relief reaches its peak']],
-    ['Weeks 7–9','Validate with listeners','Check that the sound reads as pain, and relief as relief.',['Play-back test: listeners rate pain and relief they hear, compared with the data curve','Include people living with tinnitus; check the sound is not distressing','Science advisor sign-off on every Measured and Literature claim']],
-    ['Week 10','Publish the platform','A shareable version for scientists, brand and creative partners.',['This page, plus the sound engine and a downloadable signal map','A one-page claims sheet: what the data supports and what is design']]];
-  $('#planRows').innerHTML=PLAN.map(p=>`<li><time>${p[0]}</time><strong>${p[1]}</strong><span>${p[2]}<ul>${p[3].map(x=>`<li>${x}</li>`).join('')}</ul></span></li>`).join('');
-  $('#openQs').innerHTML=[['Hour-by-hour pain scores','The trials posted only window sums. Per-timepoint means, in each trial\'s clinical study report or from the sponsor, would confirm each curve\'s shape directly.'],['Single-trial EEG','The repository has per-person averages, not raw trials. Gamma activity (a strong per-person pain marker in published work) and per-person neural profiles need the raw recordings from the authors.'],['Claims and ethics','If this becomes brand work for an analgesic, relief curves must match what the studies show, and the piece shouldn\'t imply EEG measures any one person\'s pain.']].map(q=>`<div><h3>${q[0]}</h3><p>${q[1]}</p></div>`).join('');
 }).catch(err=>{document.querySelector('#kpis').innerHTML='<p class="small">The data file failed to load: '+err.message+'</p>'});
 }
 </script>
