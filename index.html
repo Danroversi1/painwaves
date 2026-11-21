@@ -117,6 +117,20 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
 @media(max-width:900px){.split,.grid2{grid-template-columns:minmax(0,1fr)}.profiles{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.quotes,.open{grid-template-columns:minmax(0,1fr)}.controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.signals li,.plan ol>li{grid-template-columns:minmax(0,1fr);gap:6px}.contents{position:static}.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:18px}.kpis div:nth-child(3){border-left:0;padding-left:0}}
 @media(max-width:600px){.profiles,.controls{grid-template-columns:minmax(0,1fr)}.stagekeys{grid-template-columns:minmax(0,1fr)}.stagekeys div+div{border-left:0;padding-left:0;border-top:1px solid var(--rule)}.bar{grid-template-columns:minmax(0,8em) minmax(0,1fr) 3em}.boards{margin-left:0}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--rule)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--muted)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.srcwrap{overflow-x:auto;margin-top:8px}
+.srctbl{min-width:760px}
+.srctbl td{font-size:15px;line-height:1.55}
+.srctbl td:first-child{width:24%}.srctbl td:nth-child(3){width:13%;white-space:nowrap}.srctbl td:last-child{width:26%}
+.srctbl td strong{display:block;color:var(--ink);font-weight:500}
+.srctbl td span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.srctbl td a{display:inline-block;margin-top:6px;font-size:13px;color:var(--glow);overflow-wrap:anywhere}
+.srctbl .num{font-variant-numeric:tabular-nums;color:var(--ink)}
+@media(max-width:700px){.srctbl{min-width:0}.srctbl thead{display:none}.srctbl,.srctbl tbody,.srctbl tr,.srctbl td{display:block;width:auto!important}
+.srctbl tr{padding:18px 0;border-bottom:1px solid var(--rule)}.srctbl td{border:0;padding:4px 0}.srctbl td:nth-child(3){white-space:normal}
+.srctbl td:nth-child(2)::before,.srctbl td:nth-child(3)::before,.srctbl td:nth-child(4)::before{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+.srctbl td:nth-child(2)::before{content:'What it contains'}.srctbl td:nth-child(3)::before{content:'Size'}.srctbl td:nth-child(4)::before{content:'Used for'}
+}
 </style>
 </head>
 <body>
@@ -141,7 +155,7 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
 </div>
 
 <nav class="contents" aria-label="Contents"><div class="shell">
-  <a href="#brain">1 · Pain in the brain</a><a href="#words">2 · Pain in words</a><a href="#relief">3 · Pain to relief</a><a href="#sound">4 · Signal to sound</a><a href="#plan">The plan</a><a href="#method">Method notes</a><a href="creative.html">Creative board →</a>
+  <a href="#brain">1 · Pain in the brain</a><a href="#words">2 · Pain in words</a><a href="#relief">3 · Pain to relief</a><a href="#sound">4 · Signal to sound</a><a href="#plan">The plan</a><a href="#sources">Data sources</a><a href="#method">Method notes</a><a href="creative.html">Creative board →</a>
 </div></nav>
 
 <main class="shell">
@@ -256,7 +270,7 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
   <div class="open" id="openQs"></div>
 </section>
 
-<section class="chapter" id="method" style="border-bottom:0">
+<section class="chapter" id="method">
   <p class="eyebrow">Method notes</p>
   <div class="split">
     <div class="copy">
@@ -269,8 +283,42 @@ footer{padding:28px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
     </div>
   </div>
 </section>
+<section class="chapter" id="sources" style="border-bottom:0">
+  <p class="eyebrow">Data sources</p>
+  <h2>Where every number <em>comes from.</em></h2>
+  <p class="copy">Six sources feed the two boards. The EEG data and the trial results are public; the survey answers were supplied for this project and aren't published. Everything was read on 21 November 2026.</p>
+  <div class="srcwrap"><table class="srctbl">
+    <thead><tr><th scope="col">Source</th><th scope="col">What it contains</th><th scope="col">Size</th><th scope="col">Used for</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Supplement-Data</strong><span>Xiangyue Zhao · GitHub</span><a href="https://github.com/XiangyueZhao/Supplement-Data" target="_blank" rel="noopener">github.com/XiangyueZhao/Supplement-Data</a></td>
+        <td>Laser heat pain experiments: single-trial pain ratings (0–10) with laser energy, and Cz EEG waveforms averaged by rating level. Nine experiments recorded on Biosemi, Brain Products and ANT systems.</td>
+        <td class="num">678 people<br>29,249 rated trials</td>
+        <td>Chapter 1 pain profiles and the N2–P2 brain response; on the Creative board, the 678 people and the Cz rings.</td></tr>
+      <tr><td><strong>time-domin</strong><span>Xiangyue Zhao · GitHub</span><a href="https://github.com/XiangyueZhao/time-domin" target="_blank" rel="noopener">github.com/XiangyueZhao/time-domin</a></td>
+        <td>MATLAB scripts for the authors' time-domain analysis of the waveforms (repeated-measures ANOVA).</td>
+        <td class="num">2 scripts</td>
+        <td>Reference for how the original analysis was done. No data comes from it.</td></tr>
+      <tr><td><strong>Hawking Retest Verbatims, Custom Question 1</strong><span>Survey export (Excel) · supplied for this project, not public</span></td>
+        <td>Open answers to “How would you describe your pain if it was a noise you can't escape?”, with age and sex, from four survey cells: Painwaves 15 Retest Claim A and B, Sound of Pain Retest 15 and 30.</td>
+        <td class="num">600 people<br>150 per cell</td>
+        <td>Chapter 2 descriptors (time pattern, timbre, body); the six sound personas.</td></tr>
+      <tr><td><strong>NCT05761574</strong><span>ClinicalTrials.gov · posted results</span><a href="https://clinicaltrials.gov/study/NCT05761574" target="_blank" rel="noopener">clinicaltrials.gov/study/NCT05761574</a></td>
+        <td>Postoperative dental pain, single dose. Arms: acetaminophen + naproxen sodium, naproxen sodium, acetaminophen, placebo. Summed pain-intensity difference (SPID) over 0–6 h and 6–12 h.</td>
+        <td class="num">447 people<br>4 arms</td>
+        <td>Chapter 3 relief curves; the Creative board's default relief curve.</td></tr>
+      <tr><td><strong>NCT05868122</strong><span>ClinicalTrials.gov · posted results</span><a href="https://clinicaltrials.gov/study/NCT05868122" target="_blank" rel="noopener">clinicaltrials.gov/study/NCT05868122</a></td>
+        <td>Pain after bunion surgery, dosed every 12 h for 48 h. Arms: acetaminophen + naproxen sodium, placebo. SPID windows across the 48 hours.</td>
+        <td class="num">143 people<br>2 arms</td>
+        <td>Chapter 3 multi-dose relief curves and the placebo recovery curve.</td></tr>
+      <tr><td><strong>Reference values</strong><span>Published literature</span></td>
+        <td>Typical oral pharmacokinetics (acetaminophen peak 0.75 h, half-life 2.5 h; naproxen sodium peak 1 h, half-life 14 h). IMMPACT benchmarks for 30% and 50% pain reduction (Dworkin et al., <em>Journal of Pain</em>, 2008).</td>
+        <td class="num">—</td>
+        <td>The shape of the relief model and its 30% / 50% thresholds.</td></tr>
+    </tbody>
+  </table></div>
+</section>
 </main>
-<footer class="shell"><span>Painwaves · Daniel Roversi · danielroversi.com</span><span>Data: github.com/XiangyueZhao/Supplement-Data · Hawking Retest Verbatims, Custom Question 1</span></footer>
+<footer class="shell"><span>Painwaves · Daniel Roversi · danielroversi.com</span><span>Data: <a href="#sources">six sources</a>, listed under Data sources</span></footer>
 <div class="tip" id="tip" role="status"></div>
 
 <script>
