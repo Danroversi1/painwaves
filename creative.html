@@ -81,7 +81,18 @@ input[type=range]{width:100%;accent-color:var(--glow);height:28px}
 .dnitem{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:8px;border-radius:8px;border:1px solid transparent;background:none;color:var(--ink);cursor:pointer;font:inherit;font-size:13px}
 .dnitem:hover{border-color:var(--rule);background:rgba(255,255,255,.03)}
 .dnnum{flex:0 0 22px;height:22px;border-radius:50%;background:var(--glow);color:var(--bg);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
-.dntxt{min-width:0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.dntxt em{font-style:normal;color:var(--muted);margin-right:6px}
+.dntxt{min-width:0;display:flex;flex-direction:column;gap:2px}.dnline{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.dntxt em{font-style:normal;color:var(--muted);margin-right:6px}
+.npin.team.pending{background:var(--ember);box-shadow:0 0 0 1px var(--ember),0 2px 10px rgba(0,0,0,.6)}
+.npin.team.approved{background:var(--glow)}.npin.team.approved::before{content:'✓';position:absolute;right:-6px;top:-6px;width:14px;height:14px;border-radius:50%;background:var(--bg);color:var(--glow);font-size:10px;line-height:14px;text-align:center}
+.npin.team.declined{background:#3a3d38;color:var(--soft);box-shadow:0 0 0 1px #5b5f57}
+.npin.off.team.pending{background:rgba(11,13,11,.75);color:var(--ember);border-color:var(--ember)}
+.dnnum.team.pending{background:var(--ember)}.dnnum.team.declined{background:#3a3d38;color:var(--soft)}
+.stchip{display:inline-block;margin:0 0 8px;padding:2px 9px;border-radius:999px;font-size:11px;letter-spacing:.02em;border:1px solid}
+.stchip.pending{color:var(--ember);border-color:var(--ember)}.stchip.approved{color:var(--glow);border-color:var(--glow)}.stchip.declined{color:var(--muted);border-color:#5b5f57}
+.dntop{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}.dntop .stchip{margin:0;font-size:10px;padding:0 7px}.dnline{display:block}
+.dncount{margin:0;font-size:13px;color:var(--ember)}.dncount:empty{display:none}
+.nreply{margin:0 0 10px;padding:8px 10px;border-left:2px solid var(--glow);background:rgba(184,199,176,.06);font-size:13px;white-space:pre-wrap}
+.npop textarea+.nrow{margin-top:8px}.npop .nbody+textarea{min-height:56px}
 .dnempty{font-size:13px;color:var(--muted)}
 .dnlock{align-self:flex-start;background:none;border:0;padding:4px 0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
 .ctlrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ctlrow .btn{padding:0 6px;font-size:14px;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;min-width:0}
@@ -183,15 +194,18 @@ footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
         <p class="note">Drag the stage to turn, scroll or pinch to fly in, shift-drag to slide. Particles swell as you approach and pass by you as you fly through. Drag up or down to tilt all the way over the top or underneath. Switch the viewer to Move (or press M) and dragging slides the camera on X and Y instead; shift-drag or right-drag always does the opposite of the current mode. Keys: W/S forward and back, A/D or ← → left and right, Q/E, R/F or ↑ ↓ up and down.</p></div>
       <label class="toggle"><input type="checkbox" id="wear" checked> Play to the end of the trial</label>
       <div class="row ctlrow"><button class="btn solid" id="playBtn">Pause</button><button class="btn" id="restart">Restart</button><button class="btn" id="shuffle">Reshuffle</button></div>
-      <section class="devnotes" id="devnotes" hidden aria-label="Developer notes">
-        <h3>Developer notes</h3>
-        <form id="dnUnlock" class="dnunlock"><label for="dnKey">Developer key</label><div class="dnrow"><input id="dnKey" type="password" autocomplete="current-password" placeholder="Paste key"><button class="btn solid" type="submit">Unlock</button></div></form>
+      <section class="devnotes" id="devnotes" hidden aria-label="Notes and comments">
+        <h3 id="dnTitle">Comments</h3>
+        <p class="note" id="dnIntro"></p>
+        <p class="dncount" id="dnCount"></p>
+        <form id="dnUnlock" class="dnunlock" hidden><label for="dnKey">Developer key</label><div class="dnrow"><input id="dnKey" type="password" autocomplete="current-password" placeholder="Paste key"><button class="btn solid" type="submit">Unlock</button></div></form>
+        <div id="dnName" class="dnunlock" hidden><label for="dnNameIn">Your name</label><div class="dnrow"><input id="dnNameIn" type="text" maxlength="60" autocomplete="name" placeholder="Sent with your comments"></div></div>
         <div id="dnBody" hidden>
           <label class="toggle"><input type="checkbox" id="dnShow" checked> Show pins on the viewer</label>
           <ol class="dnlist" id="dnList"></ol>
         </div>
         <p class="note" id="dnStatus" aria-live="polite"></p>
-        <button class="dnlock" id="dnLock" hidden>Lock notes on this browser</button>
+        <button class="dnlock" id="dnLock" hidden>Lock developer notes on this browser</button>
       </section>
       <p class="note">Tip: click the trace below to jump to any moment.</p>
     </aside>
@@ -571,72 +585,109 @@ $('#maps').innerHTML=MAPS.map(m=>`<li><strong>${m[0]}</strong><span>${m[1]}</spa
 fetch('data.json').then(r=>r.json()).then(async d=>{D=d;ET=D.erp.t;const r10=D.erp.rating[9];ERPN=(r10.p2-r10.n2)/2;  const TL={dental:'Dental',bunion:'Bunion'};$('#drug').innerHTML=['dental','bunion'].map(k=>`<optgroup label="${TL[k]} surgery · ${D.trials[k].nct}">`+Object.entries(D.trials[k].arms).map(([a,v])=>`<option value="${k}.${a}">${TL[k]} · ${v.label}</option>`).join('')+'</optgroup>').join('');$('#drug').value=drug;
   prep();timeline();renderPersonas();const ro=new ResizeObserver(()=>{resize();drawTrace()});ro.observe(stage);pick(0);resize();drawTrace();requestAnimationFrame(frame);autoSound()})
  .catch(e=>{$('#phase').textContent='Data failed to load: '+e.message});
-// ---------- developer notes pinned on the viewer (live site only, needs the developer key) ----------
+// ---------- notes and team comments pinned on the viewer (live site only) ----------
+// Developer: open with ?dev and unlock with the developer key. Team: open the share link with ?team=CODE.
 (()=>{
- const KEYNAME='pw_dev_key',API='/api/notes';
- const store={get:()=>{try{return localStorage.getItem(KEYNAME)||''}catch(e){return ''}},set:v=>{try{v?localStorage.setItem(KEYNAME,v):localStorage.removeItem(KEYNAME)}catch(e){}}};
- const wantDev=/[?&]dev\b/.test(location.search)||!!store.get();
- if(!wantDev)return;
- let key=store.get(),notes=[],placing=false,showPins=true,openId=null;
+ const API='/api/notes',LS={dev:'pw_dev_key',team:'pw_team_key',name:'pw_name'};
+ const ls={get:k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}},set:(k,v)=>{try{v?localStorage.setItem(k,v):localStorage.removeItem(k)}catch(e){}}};
+ const qs=new URLSearchParams(location.search),urlTeam=(qs.get('team')||'').trim();
+ if(urlTeam)ls.set(LS.team,urlTeam);
+ const wantDev=qs.has('dev')||!!ls.get(LS.dev),teamKey=ls.get(LS.team);
+ if(!wantDev&&!teamKey)return;
+ let role=wantDev?'dev':'team',key=wantDev?ls.get(LS.dev):teamKey,notes=[],placing=false,showPins=true,openId=null;
  const box=$('#devnotes'),pins=$('#pins'),pop=$('#npop'),addBtn=$('#noteAdd');
  box.hidden=false;
+ const ADD=()=>role==='dev'?'Add note':'Add comment';
  const call=async(method,body,q='')=>{const r=await fetch(API+q,{method,headers:{'content-type':'application/json','x-dev-key':key},body:body?JSON.stringify(body):undefined,cache:'no-store'});
-   if(r.status===401)throw Object.assign(new Error('Wrong developer key'),{auth:1});
-   if(!r.ok)throw new Error(r.status===404?'Notes only work on the live Vercel site':'Server error '+r.status);return r.json()};
+   if(r.status===401)throw Object.assign(new Error(role==='dev'?'Wrong developer key':'This comment link is no longer valid. Ask for a new one.'),{auth:1});
+   if(!r.ok){let m='';try{m=(await r.json()).error||''}catch(e){}throw new Error(r.status===404&&!m?'Comments only work on the live site':(m?m[0].toUpperCase()+m.slice(1):'Server error '+r.status))}return r.json()};
  const near=(a,b)=>['yaw','pitch'].every(k=>Math.abs(Math.atan2(Math.sin(a[k]-b[k]),Math.cos(a[k]-b[k])))<.035)&&['tx','ty','tz'].every(k=>Math.abs(a[k]-b[k])<.025);
  const sceneIdx=name=>SCN.findIndex(x=>x.name===name);
- const fmtDate=s=>{try{return new Date(s).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return ''}};
+ const fmtDate=s=>{try{return new Date(s).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return ''}};
  const status=t=>{$('#dnStatus').textContent=t||''};
- const setPlacing=v=>{placing=v;addBtn.setAttribute('aria-pressed',String(v));addBtn.textContent=v?'Click the viewer…':'Add note';stage.classList.toggle('placing',v)};
- const renderUnlock=()=>{$('#dnLock').hidden=!key;$('#dnUnlock').hidden=!!key;$('#dnBody').hidden=!key;addBtn.hidden=!key};
+ const STAT={pending:'Waiting for review',approved:'Approved',declined:'Declined'};
+ const cls=n=>n.kind==='team'?'team '+(n.status||'pending'):'dev';
+ const el=(tag,c,t)=>{const e=document.createElement(tag);if(c)e.className=c;if(t!=null)e.textContent=t;return e};
+ const setPlacing=v=>{placing=v;addBtn.setAttribute('aria-pressed',String(v));addBtn.textContent=v?'Click the viewer…':ADD();stage.classList.toggle('placing',v)};
+ const renderShell=()=>{const dev=role==='dev';
+   $('#dnTitle').textContent=dev?'Notes and team comments':'Comments';
+   $('#dnIntro').textContent=dev?'Your private notes, plus comments from the team. Only you can see them. Approve or decline each comment.':'Press Add comment, click the spot you mean on the viewer, and write your note. Comments go privately to the producer for review.';
+   $('#dnUnlock').hidden=!(dev&&!key);$('#dnBody').hidden=!(dev&&key);$('#dnLock').hidden=!(dev&&key);$('#dnName').hidden=dev||!key;addBtn.hidden=!key;addBtn.textContent=ADD();
+   if(!dev)$('#dnNameIn').value=ls.get(LS.name)};
+ const order=()=>{const rank=n=>n.kind==='team'&&n.status==='pending'?0:1;return notes.map((n,i)=>({n,i})).sort((a,b)=>role==='dev'?rank(a.n)-rank(b.n)||a.i-b.i:a.i-b.i)};
+ const label=n=>String(notes.indexOf(n)+1);
  const renderList=()=>{const ul=$('#dnList');ul.innerHTML='';
-   if(!notes.length){ul.innerHTML='<li class="dnempty">No notes yet. Press Add note, then click the viewer.</li>';return}
-   notes.forEach((n,i)=>{const li=document.createElement('li'),b=document.createElement('button');b.className='dnitem';
-     const num=document.createElement('span');num.className='dnnum';num.textContent=i+1;
-     const tx=document.createElement('span');tx.className='dntxt';const sc=document.createElement('em');sc.textContent=n.scene;tx.append(sc,document.createTextNode(n.text.split('\n')[0]));
-     b.append(num,tx);b.onclick=()=>goTo(n,true);li.append(b);ul.append(li)})};
+   const waiting=notes.filter(n=>n.kind==='team'&&n.status==='pending').length;
+   $('#dnCount').textContent=role==='dev'&&waiting?waiting+' waiting for review':'';
+   if(!notes.length){ul.append(el('li','dnempty',role==='dev'?'No notes or comments yet.':'No comments yet. Be the first.'));return}
+   order().forEach(({n})=>{const li=el('li'),b=el('button','dnitem');
+     const num=el('span','dnnum '+cls(n),label(n));const tx=el('span','dntxt');
+     const top=el('span','dntop');top.append(el('em',null,n.kind==='team'?(n.author||'Team'):'You'),el('em',null,n.scene));
+     if(n.kind==='team')top.append(el('span','stchip '+(n.status||'pending'),STAT[n.status||'pending']));
+     tx.append(top,el('span','dnline',n.text.split('\n')[0]));b.append(num,tx);b.onclick=()=>goTo(n,true);li.append(b);ul.append(li)})};
  const renderPins=()=>{pins.innerHTML='';if(!key||!showPins)return;const cur=SCN[sel].name;
-   notes.forEach((n,i)=>{if(n.scene!==cur)return;const p=document.createElement('button');p.className='npin';p.textContent=i+1;p.dataset.id=n.id;
-     p.style.left=(n.x*100)+'%';p.style.top=(n.y*100)+'%';p.setAttribute('aria-label','Note '+(i+1)+': '+n.text.slice(0,60));
+   notes.forEach(n=>{if(n.scene!==cur)return;const p=el('button','npin '+cls(n),label(n));p.dataset.id=n.id;
+     p.style.left=(n.x*100)+'%';p.style.top=(n.y*100)+'%';
+     p.setAttribute('aria-label',(n.kind==='team'?'Comment from '+(n.author||'team')+', '+STAT[n.status||'pending']:'Note')+': '+n.text.slice(0,60));
      p.onpointerdown=e=>e.stopPropagation();p.onclick=e=>{e.stopPropagation();goTo(n,false)};pins.append(p)});dimPins()};
- const dimPins=()=>{pins.querySelectorAll('.npin').forEach(p=>{const n=notes.find(x=>x.id===p.dataset.id);p.classList.toggle('off',!!n&&!near(VIEW,n.view));p.classList.toggle('open',p.dataset.id===openId)})};
+ const dimPins=()=>{pins.querySelectorAll('.npin').forEach(p=>{const n=notes.find(x=>x.id===p.dataset.id);if(!n)return;p.classList.toggle('off',!near(VIEW,n.view));p.classList.toggle('open',p.dataset.id===openId)})};
  setInterval(()=>{if(key&&showPins)dimPins()},250);
  const closePop=()=>{pop.hidden=true;openId=null;dimPins()};
  const place=(x,y)=>{const W_=stage.clientWidth,H_=stage.clientHeight,pw=pop.offsetWidth,ph=pop.offsetHeight,px=x*W_,py=y*H_;
    let l=px+22;if(l+pw>W_-12)l=px-22-pw;l=Math.max(12,Math.min(l,W_-pw-12));let t=py-ph/2;t=Math.max(70,Math.min(t,H_-ph-90));if(t<12)t=12;pop.style.left=l+'px';pop.style.top=t+'px'};
- const showNote=n=>{openId=n.id;pop.innerHTML='';pop.hidden=false;place(n.x,n.y);
-   const meta=document.createElement('p');meta.className='nmeta';meta.textContent=[n.scene,n.ctx&&n.ctx.persona,n.ctx&&n.ctx.phase,fmtDate(n.created)].filter(Boolean).join(' · ');
-   const body=document.createElement('p');body.className='nbody';body.textContent=n.text;
-   const row=document.createElement('div');row.className='nrow';
-   const mk=(t,f,c)=>{const b=document.createElement('button');b.className='btn'+(c?' '+c:'');b.textContent=t;b.onclick=f;row.append(b);return b};
-   mk('Edit',()=>editNote(n));mk('Delete',async()=>{if(!confirmDel(row))return;try{await call('DELETE',null,'?id='+encodeURIComponent(n.id));notes=notes.filter(x=>x.id!==n.id);closePop();renderPins();renderList();status('Note deleted')}catch(e){status(e.message)}});mk('Close',closePop);
-   pop.append(meta,body,row);place(n.x,n.y);dimPins()};
- let delArm=null;const confirmDel=row=>{const b=row.children[1];if(delArm===b){delArm=null;return true}delArm=b;b.textContent='Delete for good?';setTimeout(()=>{if(delArm===b){delArm=null;b.textContent='Delete'}},3000);return false};
- const editor=(x,y,init,onSave)=>{pop.innerHTML='';pop.hidden=false;place(x,y);
-   const ta=document.createElement('textarea');ta.value=init||'';ta.maxLength=2000;ta.rows=4;ta.placeholder='Note for this view…';ta.setAttribute('aria-label','Note text');
-   const row=document.createElement('div');row.className='nrow';
-   const save=document.createElement('button');save.className='btn solid';save.textContent='Save';
-   const cancel=document.createElement('button');cancel.className='btn';cancel.textContent='Cancel';cancel.onclick=()=>{closePop();renderPins()};
-   save.onclick=async()=>{const t=ta.value.trim();if(!t){ta.focus();return}save.disabled=true;save.textContent='Saving…';try{await onSave(t)}catch(e){status(e.message);save.disabled=false;save.textContent='Save'}};
+ const btn=(row,t,f,c)=>{const b=el('button','btn'+(c?' '+c:''),t);b.onclick=f;row.append(b);return b};
+ const armed=new WeakSet();const confirm2=(b,t)=>{if(armed.has(b))return true;armed.add(b);const o=b.textContent;b.textContent=t;setTimeout(()=>{armed.delete(b);b.textContent=o},3000);return false};
+ const del=async n=>{try{await call('DELETE',null,'?id='+encodeURIComponent(n.id));notes=notes.filter(x=>x.id!==n.id);closePop();renderPins();renderList();status('Deleted')}catch(e){status(e.message)}};
+ const showNote=n=>{openId=n.id;pop.innerHTML='';pop.hidden=false;
+   const meta=el('p','nmeta',[n.kind==='team'?(n.author||'Team'):'Your note',n.scene,n.ctx&&n.ctx.phase,fmtDate(n.created)].filter(Boolean).join(' · '));pop.append(meta);
+   if(n.kind==='team')pop.append(el('span','stchip '+(n.status||'pending'),STAT[n.status||'pending']));
+   pop.append(el('p','nbody',n.text));
+   if(n.kind==='team'&&n.reply&&role!=='dev'){const r=el('p','nreply');r.append(el('strong',null,'Reply: '),document.createTextNode(n.reply));pop.append(r)}
+   const row=el('div','nrow');
+   if(role==='dev'&&n.kind==='team'){
+     const ta=el('textarea');ta.rows=2;ta.maxLength=2000;ta.placeholder='Decision note, only you see it (optional)';ta.value=n.reply||'';ta.setAttribute('aria-label','Decision note');ta.addEventListener('keydown',e=>e.stopPropagation());pop.append(ta);
+     const decide=async(st,b)=>{b.disabled=true;try{const r=await call('PATCH',{id:n.id,status:st,reply:ta.value});Object.assign(n,r.note);renderPins();renderList();showNote(n);status(STAT[st])}catch(e){status(e.message);b.disabled=false}};
+     const a=btn(row,'Approve',()=>decide('approved',a),n.status==='approved'?'solid':'');
+     const d=btn(row,'Decline',()=>decide('declined',d),n.status==='declined'?'solid':'');
+     if(n.status!=='pending'){const u=btn(row,'Undo',()=>decide('pending',u))}
+     const x=btn(row,'Delete',()=>{if(confirm2(x,'Delete for good?'))del(n)});
+   }else if(role==='dev'){
+     btn(row,'Edit',()=>editNote(n));const x=btn(row,'Delete',()=>{if(confirm2(x,'Delete for good?'))del(n)});
+   }
+   btn(row,'Close',closePop);pop.append(row);place(n.x,n.y);dimPins()};
+ const editor=(x,y,init,onSave)=>{pop.innerHTML='';pop.hidden=false;
+   const ta=el('textarea');ta.value=init||'';ta.maxLength=2000;ta.rows=4;ta.placeholder=role==='dev'?'Note for this view…':'What should change here?';ta.setAttribute('aria-label',role==='dev'?'Note text':'Comment');
+   const row=el('div','nrow'),save=el('button','btn solid',role==='dev'?'Save':'Send for review'),cancel=el('button','btn','Cancel');
+   cancel.onclick=()=>{closePop();renderPins()};
+   save.onclick=async()=>{const t=ta.value.trim();if(!t){ta.focus();return}
+     if(role==='team'&&!ls.get(LS.name)){status('Add your name first');$('#dnNameIn').focus();return}
+     save.disabled=true;save.textContent='Sending…';try{await onSave(t)}catch(e){status(e.message);save.disabled=false;save.textContent=role==='dev'?'Save':'Send for review'}};
    ta.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))save.click();if(e.key==='Escape')cancel.click()});
    row.append(save,cancel);pop.append(ta,row);place(x,y);setTimeout(()=>ta.focus(),0)};
- const editNote=n=>editor(n.x,n.y,n.text,async t=>{const r=await call('PATCH',{id:n.id,text:t});Object.assign(n,r.note);showNote(n);renderList();status('Note saved')});
+ const editNote=n=>editor(n.x,n.y,n.text,async t=>{const r=await call('PATCH',{id:n.id,text:t});Object.assign(n,r.note);showNote(n);renderList();status('Saved')});
  const goTo=(n,fromList)=>{const i=sceneIdx(n.scene);if(i<0){status('That scene no longer exists');return}
    if(i!==sel)pick(i);VIEW=Object.assign({},n.view);syncView();renderPins();showNote(n);if(fromList)stage.scrollIntoView({block:'nearest',behavior:'smooth'})};
- stage.addEventListener('pointerdown',e=>{if(!placing||e.target.closest('.npop,.camui,.scenepick,.npin'))return;e.stopPropagation();e.preventDefault();
+ stage.addEventListener('pointerdown',e=>{if(!placing||e.target.closest('.npop,.camui,.scenepick,.npin,.sndgate'))return;e.stopPropagation();e.preventDefault();
+   if(role==='team'&&!ls.get(LS.name)){setPlacing(false);status('Add your name first');$('#dnNameIn').focus();return}
    const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;setPlacing(false);
-   const tmp=document.createElement('span');tmp.className='npin draft';tmp.style.left=(x*100)+'%';tmp.style.top=(y*100)+'%';tmp.textContent='+';pins.append(tmp);
+   const tmp=el('span','npin draft '+(role==='dev'?'dev':'team pending'),'+');tmp.style.left=(x*100)+'%';tmp.style.top=(y*100)+'%';pins.append(tmp);
    const ctx={persona:per,age:ageB,profile:prof,relief:drug,t:+clock.toFixed(2),phase:($('#phase').firstChild&&$('#phase').firstChild.textContent||'').trim()};
-   editor(x,y,'',async t=>{const r=await call('POST',{scene:SCN[sel].name,view:Object.assign({},VIEW),x,y,text:t,ctx});notes.push(r.note);renderPins();renderList();showNote(r.note);status('Note saved')})},true);
+   editor(x,y,'',async t=>{const r=await call('POST',{scene:SCN[sel].name,view:Object.assign({},VIEW),x,y,text:t,ctx,author:ls.get(LS.name)});
+     if(role==='dev'){notes.push(r.note);renderPins();renderList();showNote(r.note);status('Saved');return}
+     closePop();renderPins();status('Sent for review. Thank you.')})},true);
  addEventListener('keydown',e=>{if(e.key==='Escape'&&placing)setPlacing(false)});
- addBtn.onclick=()=>{closePop();setPlacing(!placing)};
+ addBtn.onclick=()=>{closePop();if(role==='team'&&!ls.get(LS.name)){status('Add your name first');$('#dnNameIn').focus();return}setPlacing(!placing)};
+ $('#dnNameIn').addEventListener('change',e=>{ls.set(LS.name,e.target.value.trim().slice(0,60));status(e.target.value.trim()?'Name saved':'')});
+ $('#dnNameIn').addEventListener('keydown',e=>e.stopPropagation());
  $('#dnShow').onchange=e=>{showPins=e.target.checked;renderPins();if(!showPins)closePop()};
  $('#scene').addEventListener('change',()=>{closePop();setTimeout(renderPins,0)});
- const load=async()=>{status('Loading notes…');try{const r=await call('GET');notes=r.notes||[];renderPins();renderList();status(notes.length?notes.length+' note'+(notes.length>1?'s':''):'')}
-   catch(e){if(e.auth){key='';store.set('');renderUnlock()}status(e.message)}};
- $('#dnUnlock').onsubmit=e=>{e.preventDefault();key=$('#dnKey').value.trim();if(!key)return;store.set(key);$('#dnKey').value='';renderUnlock();load()};
- $('#dnLock').onclick=()=>{key='';store.set('');notes=[];closePop();setPlacing(false);renderPins();renderUnlock();status('Locked on this browser')};
- renderUnlock();if(key)load();
+ const load=async()=>{if(role!=='dev'){renderPins();return}status('Loading…');try{const r=await call('GET');notes=r.notes||[];renderPins();renderList();status('')}
+   catch(e){if(e.auth&&role==='dev'){key='';ls.set(LS.dev,'')}if(e.auth&&role==='team'){key='';ls.set(LS.team,'')}renderShell();status(e.message)}};
+ setInterval(()=>{if(role==='dev'&&key&&!document.hidden&&pop.hidden&&!placing)call('GET').then(r=>{const before=JSON.stringify(notes);notes=r.notes||[];if(JSON.stringify(notes)!==before){renderPins();renderList()}}).catch(()=>{})},45000);
+ $('#dnUnlock').onsubmit=e=>{e.preventDefault();key=$('#dnKey').value.trim();if(!key)return;ls.set(LS.dev,key);$('#dnKey').value='';renderShell();load()};
+ $('#dnLock').onclick=()=>{key='';ls.set(LS.dev,'');notes=[];closePop();setPlacing(false);renderPins();
+   const tk=ls.get(LS.team);if(tk){role='team';key=tk;renderShell();load();return}renderShell();status('Locked on this browser')};
+ renderShell();if(key)load();
 })();
 }
 </script>
