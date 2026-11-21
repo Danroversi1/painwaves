@@ -181,7 +181,7 @@ footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
         <label class="vrow">Z <input type="range" id="vz" min="-1" max="1.6" step="0.005" value="0"></label>
         <div class="row"><button class="btn" id="vreset">Reset view</button></div>
         <p class="note">Drag the stage to turn, scroll or pinch to fly in, shift-drag to slide. Particles swell as you approach and pass by you as you fly through. Drag up or down to tilt all the way over the top or underneath. Switch the viewer to Move (or press M) and dragging slides the camera on X and Y instead; shift-drag or right-drag always does the opposite of the current mode. Keys: W/S forward and back, A/D or ← → left and right, Q/E, R/F or ↑ ↓ up and down.</p></div>
-      <label class="toggle"><input type="checkbox" id="wear"> Play to the end of the trial</label>
+      <label class="toggle"><input type="checkbox" id="wear" checked> Play to the end of the trial</label>
       <div class="row ctlrow"><button class="btn solid" id="playBtn">Pause</button><button class="btn" id="restart">Restart</button><button class="btn" id="shuffle">Reshuffle</button></div>
       <section class="devnotes" id="devnotes" hidden aria-label="Developer notes">
         <h3>Developer notes</h3>
@@ -223,7 +223,7 @@ const $=s=>document.querySelector(s);
 const MODE_TXT={orbit:'Orbit: particles circle the centre; pain speeds and frays the rings.',rise:'Rise: particles lift like a fountain; pain drives them higher and faster.',flow:'Flow: particles stream sideways; pain turns the stream into rapids.',terrain:'Terrain: the image heaves like a surface; pain raises the swell.',burst:'Burst: particles fire outward along their branches with each pulse.',swirl:'Swirl: a vortex that tightens with pain and opens with relief.'};
 const NAMES=['Fading','Quiet','Sustained','Crescendo'],COL=['#3987e5','#d95926','#199e70','#c98500'];
 const cv=$('#cv'),ctx=cv.getContext('2d',{alpha:false}),stage=$('#stage');
-let per='pounder',ageB='35–49',strikes=[],nextStrike=0,EL=null,VHI=null,VPOOL=null,prevR=0,prevDr=0,WEV=[],wDir=1,lastWave=-9,OPX=null,OPY=null,MVX=null,MVD=null,MVN=null,MVB=null,modT=0,D=null,sel=0,prof=2,drug='dental.combo',wear=false,HZ=12,playing=true,N=6000,W=0,H=0,img=null,buf=null,u32=null;
+let per='pounder',ageB='35–49',strikes=[],nextStrike=0,EL=null,VHI=null,VPOOL=null,prevR=0,prevDr=0,WEV=[],wDir=1,lastWave=-9,OPX=null,OPY=null,MVX=null,MVD=null,MVN=null,MVB=null,modT=0,D=null,sel=0,prof=2,drug='dental.combo',wear=true,HZ=12,playing=true,N=6000,W=0,H=0,img=null,buf=null,u32=null;
 // ---------- data model ----------
 const PRE={a:{tmax:.75,hl:2.5,emax:.85,hill:2,lag:.35},b:{tmax:2,hl:9,emax:.7,hill:1.5,lag:.6}};
 let relief=[];
