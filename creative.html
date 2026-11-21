@@ -54,6 +54,7 @@ input[type=range]{width:100%;accent-color:var(--glow);height:28px}
 .row{display:flex;gap:8px;align-items:center}
 .btn{min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--glow);background:none;color:var(--ink);cursor:pointer;font-size:15px}
 .btn.solid{background:var(--glow);color:var(--bg)}
+.ctlrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ctlrow .btn{padding:0 6px;font-size:14px;white-space:nowrap;text-align:center;display:flex;align-items:center;justify-content:center;min-width:0}
 .toggle{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--soft);min-height:40px;cursor:pointer}
 .toggle input{width:18px;height:18px;accent-color:var(--glow)}
 .note{font-size:13px;color:var(--muted);line-height:1.5}
@@ -148,7 +149,7 @@ footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
         <div class="row"><button class="btn" id="vreset">Reset view</button></div>
         <p class="note">Drag the stage to turn, scroll or pinch to fly in, shift-drag to slide. Particles swell as you approach and pass by you as you fly through. Drag up or down to tilt all the way over the top or underneath. Switch the viewer to Move (or press M) and dragging slides the camera on X and Y instead; shift-drag or right-drag always does the opposite of the current mode. Keys: W/S forward and back, A/D or ← → left and right, Q/E, R/F or ↑ ↓ up and down.</p></div>
       <label class="toggle"><input type="checkbox" id="wear"> Play to the end of the trial</label>
-      <div class="row"><button class="btn solid" id="playBtn">Pause</button><button class="btn" id="restart">Restart</button><button class="btn" id="shuffle">Reshuffle</button></div>
+      <div class="row ctlrow"><button class="btn solid" id="playBtn">Pause</button><button class="btn" id="restart">Restart</button><button class="btn" id="shuffle">Reshuffle</button></div>
       <p class="note">Tip: click the trace below to jump to any moment.</p>
     </aside>
   </section>
