@@ -1,5 +1,35 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/creative.html", "permanent": false }
+    {
+      "source": "/",
+      "destination": "/creative.html",
+      "permanent": false
+    },
+    {
+      "source": "/faces.html",
+      "destination": "/faces/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/faces/",
+      "destination": "https://portrait-depth-studio.vercel.app/"
+    },
+    {
+      "source": "/faces/:path*",
+      "destination": "https://portrait-depth-studio.vercel.app/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/data.json",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
   ]
 }
