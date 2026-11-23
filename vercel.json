@@ -30,6 +30,15 @@
           "value": "*"
         }
       ]
+    },
+    {
+      "source": "/audio-worklet.js",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ]
 }
