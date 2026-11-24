@@ -35,7 +35,7 @@ h1{font:clamp(44px,6vw,84px)/.98 var(--serif);letter-spacing:-.03em;margin-top:1
 .camui{flex:0 0 auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums;text-shadow:0 1px 6px #000}
 .camui span{padding:6px 10px;border-radius:999px;background:rgba(11,13,11,.7)}.camui.moved span{color:var(--ink);box-shadow:inset 0 0 0 1px var(--glow)}
 .cammode{display:flex;border:1px solid var(--glow);border-radius:999px;overflow:hidden;background:rgba(11,13,11,.82)}.cammode button{min-height:40px;padding:0 14px;border:0;background:none;color:var(--soft);cursor:pointer;font-size:14px}.cammode button[aria-pressed=true]{background:var(--glow);color:var(--bg)}
-.camreset{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--glow);background:rgba(11,13,11,.82);color:var(--ink);cursor:pointer;font-size:14px}.camreset:hover{background:var(--glow);color:var(--bg)}
+.camreset{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--glow);background:rgba(11,13,11,.82);color:var(--ink);cursor:pointer;font-size:14px}.camreset:hover{background:var(--glow);color:var(--bg)}.camreset[hidden]{display:none!important}
 .scenepick{position:absolute;right:14px;top:12px;z-index:3;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft)}.scenepick select{width:auto;max-width:min(320px,52vw);background:rgba(11,13,11,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .hud{position:absolute;left:16px;right:min(360px,48%);top:14px;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--soft);pointer-events:none;text-shadow:0 1px 6px #000}
 .hud b{display:block;font:24px/1.1 var(--serif);font-weight:400;color:var(--ink)}
@@ -173,7 +173,7 @@ footer{padding:36px 0 48px;font-size:13px;color:var(--muted);display:flex;flex-w
       <div class="npop" id="npop" hidden></div>
       <div class="hud" id="hud"></div>
       <label class="scenepick"><span>Scene</span><select id="scene" aria-label="Scene"></select></label>
-      <div class="stagefoot"><p class="phase" id="phase"></p><div class="camui"><div class="cammode" role="group" aria-label="Drag mode"><button id="modeTurn" aria-pressed="true">Turn</button><button id="modeMove" aria-pressed="false">Move</button></div><button class="camreset" id="noteAdd" aria-pressed="false" hidden>Add note</button><span id="camRead">Turn 0° · Tilt 0°</span><button class="camreset" id="camReset" aria-label="Reset view">Reset view</button></div></div>
+      <div class="stagefoot"><p class="phase" id="phase"></p><div class="camui"><button class="camreset" id="stopBtn" type="button">Stop</button><div class="cammode" role="group" aria-label="Drag mode"><button id="modeTurn" aria-pressed="true">Turn</button><button id="modeMove" aria-pressed="false">Move</button></div><button class="camreset" id="noteAdd" aria-pressed="false" hidden>Add note</button><span id="camRead">Turn 0° · Tilt 0°</span><button class="camreset" id="camReset" aria-label="Reset view">Reset view</button></div></div>
       
     </div>
     <aside class="side">
@@ -238,7 +238,7 @@ const $=s=>document.querySelector(s);
 const MODE_TXT={orbit:'Orbit: particles circle the centre; pain speeds and frays the rings.',rise:'Rise: particles lift like a fountain; pain drives them higher and faster.',flow:'Flow: particles stream sideways; pain turns the stream into rapids.',terrain:'Terrain: the image heaves like a surface; pain raises the swell.',burst:'Burst: particles fire outward along their branches with each pulse.',swirl:'Swirl: a vortex that tightens with pain and opens with relief.'};
 const NAMES=['Fading','Quiet','Sustained','Crescendo'],COL=['#3987e5','#d95926','#199e70','#c98500'];
 const cv=$('#cv'),ctx=cv.getContext('2d',{alpha:false}),stage=$('#stage');
-let per='pounder',ageB='35–49',strikes=[],nextStrike=0,EL=null,VHI=null,VPOOL=null,prevR=0,prevDr=0,WEV=[],wDir=1,lastWave=-9,OPX=null,OPY=null,MVX=null,MVD=null,MVN=null,MVB=null,modT=0,D=null,sel=0,prof=2,drug='dental.combo',wear=true,HZ=12,playing=true,N=6000,W=0,H=0,img=null,buf=null,u32=null;
+let per='pounder',ageB='35–49',strikes=[],nextStrike=0,EL=null,VHI=null,VPOOL=null,prevR=0,prevDr=0,WEV=[],wDir=1,lastWave=-9,OPX=null,OPY=null,MVX=null,MVD=null,MVN=null,MVB=null,modT=0,D=null,sel=0,prof=2,drug='dental.combo',wear=true,HZ=12,playing=true,stopHush=false,N=6000,W=0,H=0,img=null,buf=null,u32=null;
 // ---------- data model ----------
 const PRE={a:{tmax:.75,hl:2.5,emax:.85,hill:2,lag:.35},b:{tmax:2,hl:9,emax:.7,hill:1.5,lag:.6}};
 let relief=[];
@@ -455,10 +455,10 @@ $('#sndBtn').onclick=startSound;
 const setSndLabel=()=>{const b=$('#sndBtn');if(!AC)return;const on=AC.state==='running';b.textContent=on?'Sound off':'Sound on';b.setAttribute('aria-pressed',on);$('#sndMsg').textContent=on?'Starts quiet. Voices above about 400 may stutter on slower devices.':'Sound starts with your first click or key press on the page.'};
 const autoSound=async()=>{if(AC)return;await startSound();if(!AC)return;
   let userOff=false;const gate=$('#sndGate'),evs=['pointerdown','pointerup','touchend','keydown','click'];
-  const showGate=()=>{gate.hidden=!(AC&&AC.state!=='running'&&!userOff)};
+  const showGate=()=>{gate.hidden=!(AC&&AC.state!=='running'&&!userOff&&!stopHush)};
   AC.onstatechange=()=>{setSndLabel();showGate();if(AC.state==='running')evs.forEach(ev=>document.removeEventListener(ev,wake,true))};
   $('#sndBtn').addEventListener('click',()=>{userOff=true;showGate()},{once:true,capture:true});
-  const wake=e=>{if(userOff||!AC||AC.state==='running')return;if(e&&e.target&&e.target.closest&&e.target.closest('#sndBtn'))return;
+  const wake=e=>{if(stopHush||userOff||!AC||AC.state==='running')return;if(e&&e.target&&e.target.closest&&e.target.closest('#sndBtn'))return;
     AC.resume().then(()=>MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.6)).catch(()=>{})};
   evs.forEach(ev=>document.addEventListener(ev,wake,true));
   gate.onclick=e=>{e.stopPropagation();wake()};
@@ -504,8 +504,15 @@ document.querySelectorAll('#profChips .chip').forEach(c=>c.onclick=()=>{prof=+c.
 $('#drug').onchange=e=>{drug=e.target.value;timeline();drawTrace()};
 $('#wear').onchange=e=>{wear=e.target.checked;timeline();drawTrace()};
 $('#density').oninput=e=>{N=+e.target.value;$('#densOut').textContent=N.toLocaleString()};$('#density').onchange=()=>{build()};
-$('#playBtn').onclick=()=>{playing=!playing;$('#playBtn').textContent=playing?'Pause':'Play'};
-$('#restart').onclick=()=>{clock=0;u32&&u32.fill(0xff050605)};
+// Stop ends the piece: playback halts, the sound goes quiet and the curve returns to its first frame.
+// Play, Restart or a "hear it" button sets it going again, with the sound it had.
+const stopBtn=$('#stopBtn');
+const goPlay=()=>{playing=true;$('#playBtn').textContent='Pause';stopBtn.hidden=false;
+  if(stopHush){stopHush=false;if(AC&&AC.state!=='running')AC.resume().then(()=>{MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.3);setSndLabel()}).catch(()=>{})}};
+stopBtn.onclick=()=>{playing=false;clock=0;u32&&u32.fill(0xff050605);$('#playBtn').textContent='Play';stopBtn.hidden=true;
+  if(AC&&AC.state==='running'){stopHush=true;AC.suspend().then(setSndLabel).catch(()=>{})}};
+$('#playBtn').onclick=()=>{if(playing){playing=false;$('#playBtn').textContent='Play'}else goPlay()};
+$('#restart').onclick=()=>{clock=0;u32&&u32.fill(0xff050605);goPlay()};
 $('#shuffle').onclick=()=>{seedN++;u32&&u32.fill(0xff050605);build()};
 const PERSONA={none:{name:'Raw',pulse:0,flash:1,shimmer:0,drone:0,surge:0,strike:0,jit:1},
  pounder:{name:'Pounder',pulse:1.9,flash:1.8,shimmer:0,drone:0,surge:0,strike:0,jit:.7,
@@ -556,7 +563,7 @@ const renderPersonas=()=>{const P=D.personas;
       <div><h4>Share of each age group who are ${d.name}s</h4><div class="ages">${BANDS.map(b=>{const a=p.byage[b],thin=a.n<10;return `<div class="age"><span>${b}</span><span class="tr"><span class="fl${thin?' thin':''}" style="width:${a.pct/mx*100}%"></span></span><b>${a.pct}% <i>n=${a.n}</i></b></div>`}).join('')}</div>
         <p class="note">Striped bars rest on fewer than 10 people: read them as a sketch.</p>
         <div class="row" style="margin-top:16px;flex-wrap:wrap"><button class="btn solid" data-play="${k}" data-age="18–34">Play at 18–34</button><button class="btn" data-play="${k}" data-age="65–75">Play at 65–75</button></div></div></article>`}).join('');
-  document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{setPer(b.dataset.play);setAge(b.dataset.age);clock=T_SIL+T_ON+2;playing=true;$('#playBtn').textContent='Pause';stage.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'})});
+  document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{setPer(b.dataset.play);setAge(b.dataset.age);clock=T_SIL+T_ON+2;goPlay();stage.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'})});
   $('#perFoot').textContent=`${PER_KEYS.reduce((a,k)=>a+P[k].n,0)} of 600 answers form the five personas. The other ${P._unassigned} either describe no sound, give a timbre with no time pattern (screeching, sirens) or a time pattern with no timbre (“constant”); these can be layered onto a persona rather than standing alone. Age groups: ${BANDS.map(b=>b+' n='+P._bands[b]).join(', ')}. Different people at different ages: this shows how pain sounds differ between age groups, not how one person's changes over time.`};
 const MAPS=[['Wave: hits, shockwave, rails, spray','From the Wave persona\'s own words (shockwaves, storm waves on rocks, heavy trains rolling past, sharp and high), inside the same noise voices. Each peak in the pain data is one hit: a front sweeps across the particles (shaped by the measured Cz response) and, at the same moment, the voices re-attack in the same direction across the stereo field, timed from where each voice\'s particles are, with spray two octaves up. Between hits, mid voices clack in metallic pairs that run faster as pain rises.','d','Measured + design'],
  ['Picture to sound, element by element','Every visual element drives its own part of the sound. A person\'s particles drive that person\'s voice. Structural elements (rings, sheets, bands, terrain rows) drive the voices on one harmonic (on Membrane the orbiting people join the ring they are riding), from the lowest (ring or rating 1) to the highest (the outer ring or rating 10), split into left-to-right sections. Each voice pans to where its particles are and gets louder the more they move and glow than the rest (so active rings sound and dim rings recede); particles light up with the voice they drive.','d','Measured + design'],
