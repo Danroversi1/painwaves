@@ -505,11 +505,13 @@ $('#drug').onchange=e=>{drug=e.target.value;timeline();drawTrace()};
 $('#wear').onchange=e=>{wear=e.target.checked;timeline();drawTrace()};
 $('#density').oninput=e=>{N=+e.target.value;$('#densOut').textContent=N.toLocaleString()};$('#density').onchange=()=>{build()};
 // Stop ends the piece: playback halts, the sound goes quiet and the curve returns to its first frame.
-// Play, Restart or a "hear it" button sets it going again, with the sound it had.
+// The same button then reads Play and sets it going again, with the sound it had; so do Restart and the "hear it" buttons.
 const stopBtn=$('#stopBtn');
-const goPlay=()=>{playing=true;$('#playBtn').textContent='Pause';stopBtn.hidden=false;
+const goPlay=()=>{playing=true;stopped=false;$('#playBtn').textContent='Pause';stopBtn.textContent='Stop';
   if(stopHush){stopHush=false;if(AC&&AC.state!=='running')AC.resume().then(()=>{MGN.gain.setTargetAtTime(+$('#vol').value*1.5,AC.currentTime,.3);setSndLabel()}).catch(()=>{})}};
-stopBtn.onclick=()=>{playing=false;clock=0;u32&&u32.fill(0xff050605);$('#playBtn').textContent='Play';stopBtn.hidden=true;
+let stopped=false;
+stopBtn.onclick=()=>{if(stopped){goPlay();return}
+  playing=false;stopped=true;clock=0;u32&&u32.fill(0xff050605);$('#playBtn').textContent='Play';stopBtn.textContent='Play';
   if(AC&&AC.state==='running'){stopHush=true;AC.suspend().then(setSndLabel).catch(()=>{})}};
 $('#playBtn').onclick=()=>{if(playing){playing=false;$('#playBtn').textContent='Play'}else goPlay()};
 $('#restart').onclick=()=>{clock=0;u32&&u32.fill(0xff050605);goPlay()};
